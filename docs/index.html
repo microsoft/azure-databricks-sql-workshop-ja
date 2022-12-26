@@ -777,13 +777,13 @@ SELECT COUNT(*) FROM olist_raw.order_items;
 <p>データ フローの完成形は以下キャプチャの通りです。ソース変換で ADLS Gen2 上の Orders の CSV ファイルを読み取り、行の変更変換を挟んで、シンク変換で ADLS Gen2 に Delta Lake 形式で出力します。</p>
 <p class="image-container"><img src="img\\a84dd924e0edfbb6.jpg"></p>
 <aside class="special"><p><strong>💡 データ フローの「変換」(Transformation)</strong></p>
-<p>データ フローのキャンバス内の一つ一つのボックスを <strong>変換</strong> (Transformation) と呼びます。データ フローは 1 つ以上の <strong>ソース変換</strong> から開始してデータを読み込み、色々な変換を使ってデータを変換し、最後に 1 つ以上の <strong>シンク変換</strong> でデータを出力します。</p>
+<p>データ フローのキャンバス内の一つ一つのボックスを<strong>変換</strong> (Transformation) と呼びます。データ フローは 1 つ以上の<strong>ソース変換</strong>から開始してデータを読み込み、色々な変換を使ってデータを変換し、最後に 1 つ以上の<strong>シンク変換</strong>でデータを出力します。</p>
 </aside>
 <aside class="special"><p><strong>💡 シンク変換でのアップサートと行の変更変換</strong></p>
 <p>Delta Lake 形式のテーブルに対して変更を行う際、新しい行の挿入はもちろん、既存の行の更新、両者を組み合わせたアップサート、そして既存の行の削除を行うことができます。(Apache Parquet 形式の場合は新しい行の挿入のみ対応)</p>
 <p>Delta Lake テーブルに対して行う変更について、シンク変換では挿入、削除、アップサート、更新のどれに該当するかを指定できます。本ワークショップでは、データ フローを複数回実行した場合でも、キー列 (Orders の場合は <code>order_id</code>) の値が同じ行が複数回テーブルに挿入されないようにしたいため、アップサートを指定します。</p>
 <p class="image-container"><img src="img\\8c83ba321d4d8f0a.jpg"></p>
-<p>シンク変換で削除、アップサート、更新にチェックすると、シンク変換の前に <strong>行の変更変換</strong> を組み込むよう求められます。行の変更変換では、シンク変換での挿入、削除、アップサート、更新の対象とする行を絞り込むための条件を記述します。実際のユースケースでは <code>Year > 2000</code> の行だけを更新対象にするといった使い方をします。</p>
+<p>シンク変換で削除、アップサート、更新にチェックすると、シンク変換の前に<strong>行の変更変換</strong>を組み込むよう求められます。行の変更変換では、シンク変換での挿入、削除、アップサート、更新の対象とする行を絞り込むための条件を記述します。実際のユースケースでは <code>Year > 2000</code> の行だけを更新対象にするといった使い方をします。</p>
 <p>具体的な設定手順については後ほど記載しますが、本ワークショップでは特定の行に絞り込まずに全行をアップサートの対象とします。</p>
 <p class="image-container"><img src="img\\a96fc4a71603e355.jpg"></p>
 </aside>
@@ -937,7 +937,7 @@ SELECT * FROM olist_enriched.orders;
 <p class="image-container"><img src="img\\755fe7e34380a3e6.jpg"></p>
 <p>(5) クエリについて <code>Create enriched orders table</code> などと名前を付けて <strong>[保存]</strong> を選択します。</p>
 <h2 is-upgraded><strong>🎉 まとめ</strong></h2>
-<p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders の CSV ファイル (olist_orders_dataset.csv) を Delta Lake 形式に変換しました。変換の前後で CSV 形式のデータと Delta Lake 形式のデータを Databricks SQL のクエリとデータ エクスプローラーで概観しました。次の章に進みましょう。</p>
+<p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders の CSV ファイル (<code>olist_orders_dataset.csv</code>) を Delta Lake 形式に変換しました。変換の前後で CSV 形式のデータと Delta Lake 形式のデータを Databricks SQL のクエリとデータ エクスプローラーで概観しました。次の章に進みましょう。</p>
 
 
       </google-codelab-step>
@@ -1343,7 +1343,7 @@ SELECT * FROM olist_curated.daily_order_amounts ORDER BY order_purchase_date;
 <li>ビジュアライゼーションをダッシュボードに表示</li>
 </ol>
 <p>ビジュアライゼーションは Databricks SQL の日本語ドキュメントだと視覚化や可視化と表示されることがありますが、本ワークショップではビジュアライゼーションと呼称します。</p>
-<p>本ワークショップでは数を数える <strong>カウンター</strong> や時系列の数の推移を表現する <strong>折れ線グラフ</strong> などのシンプルなビジュアライゼーションを利用しますが、他にも様々なビジュアライゼーションがサポートされています。</p>
+<p>本ワークショップでは数を数える<strong>カウンター</strong>や時系列の数の推移を表現する<strong>折れ線グラフ</strong>などのシンプルなビジュアライゼーションを利用しますが、他にも様々なビジュアライゼーションがサポートされています。</p>
 <p>詳細は <a href="https://learn.microsoft.com/ja-jp/azure/databricks/sql/user/visualizations/visualization-types" target="_blank">視覚化の種類 - Azure Databricks - Databricks SQL | Microsoft Learn</a> をご覧ください。</p>
 </aside>
 <h2 is-upgraded><strong>1. ダッシュボードの作成</strong></h2>
@@ -1592,7 +1592,7 @@ WHERE
 </td><td colspan="1" rowspan="1"><p><strong><code>https://github.com/microsoft/azure-databricks-sql-workshop-ja</code></strong> を入力します。</p>
 </td></tr>
 </table>
-<p class="image-container"><img src="img\\21aba9760fac496f.jpg"></p>
+<p class="image-container"><img src="img\\612892dc89b39e02.jpg"></p>
 <h2 is-upgraded><strong>3. ノートブックの実行</strong></h2>
 <ol type="1">
 <li>クローンした Git リポジトリ <code>azure-databricks-sql-workshop-ja</code> の <code>notebooks</code> &gt; <code>Enrich Olist Datasets with ADB Notebook</code> を表示します。</li>
