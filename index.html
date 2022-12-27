@@ -1,0 +1,1635 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Databricks SQL on Azure ワークショップ</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="docs"
+                  title="Databricks SQL on Azure ワークショップ"
+                  environment="web"
+                  feedback-link="https://github.com/microsoft/azure-databricks-sql-workshop-ja">
+    
+      <google-codelab-step label="始める前に" duration="10">
+        <p>このワークショップでは、Microsoft Azure のサービスと Microsoft Power BI を組み合わせて、以下のデータ分析プラットフォームをステップ バイ ステップで構築します。</p>
+<p class="image-container"><img src="img/52d8cfa03992b861.jpg"></p>
+<h2 is-upgraded><strong>🎯 学習内容</strong></h2>
+<p>ワークショップを通じて以下の内容を学びます。</p>
+<ul>
+<li>Azure Synapse Analytics のコピー アクティビティを用いた外部データのコピー</li>
+<li>Azure Synapse Analytics のマッピング データ フローを用いた CSV から Delta Lake への変換</li>
+<li>Databricks SQL から Azure Data Lake Storage Gen2 (ADLS Gen2) への接続</li>
+<li>Databricks SQL を用いた ADLS Gen2 上のデータのクエリ</li>
+<li>Databricks SQL のダッシュボードを用いたデータの可視化</li>
+<li>Power BI Desktop と Databricks SQL を用いたデータの可視化</li>
+</ul>
+<h2 is-upgraded><strong>🔰 難易度</strong></h2>
+<ul>
+<li>ワークショップのドキュメントには画面キャプチャ付きの詳細な手順を記載していますので、Azure にはじめて触れる方でも安心して進めて頂けます。</li>
+<li>Python や Spark のプログラムは分からないという方もご安心ください。できるだけ多くのスキル レベルの方に取り組んで頂けるよう、極力プログラムを書かずに進められるように構成しています。データの加工 (ETL) には、Azure Synapse Analytics のノーコード・ローコード ETL 機能である Synapse パイプラインとデータフローを主に用います。</li>
+</ul>
+<h2 is-upgraded><strong>📢 前提条件</strong></h2>
+<p>ワークショップ実施にあたっての前提条件は以下の通りです。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>前提条件</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>備考</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>有効な <strong>Azure サブスクリプション</strong> を持っていること</p>
+</td><td colspan="1" rowspan="1"><p>有効な Azure サブスクリプションを持っていない場合、<a href="https://azure.microsoft.com/ja-jp/free/" target="_blank">Azure の無料アカウント</a> の利用を検討してください</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>受講者のうち少なくとも 1 人が Azure サブスクリプションまたはリソース グループの <strong>所有者</strong> ロールまたは <strong>ユーザー アクセス管理者</strong> ロールを持っていること</p>
+</td><td colspan="1" rowspan="1"><p>他の受講者にロールを割り当てる必要があるためです</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ワークショップで利用するリージョン (特段の希望がなければ東日本リージョン) の以下のクォータの値が <strong><code>24 vCPU × 受講者数</code></strong> 以上になっていること</p>
+<ul>
+<li>リージョンの vCPU の合計</li>
+<li>Standard EDSv4 ファミリ vCPUs</li>
+<li>リージョンのスポット vCPU の合計</li>
+</ul>
+</td><td colspan="1" rowspan="1"><ul>
+<li>例えば受講者が 5 人の場合は <strong><code>24 vCPU × 5 人 = 120 vCPU</code></strong> が必要です</li>
+<li>クォータの確認方法およびクォータの増加リクエスト方法は <a href="https://learn.microsoft.com/ja-jp/azure/quotas/per-vm-quota-requests" target="_blank">VM ファミリの vCPU クォータの増加</a> を参照してください</li>
+<li>Databricks SQL の最小スペック (<code>XXS</code>) の仮想ウェアハウスを起動する際に 1 人あたり 16 vCPU を使用します。前提条件で 1 人 24 vCPU としているのは起動に失敗しないよう余裕を持たせるためです</li>
+</ul>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Power BI Desktop をインストール済みであること (Windows ユーザーのみ)</p>
+</td><td colspan="1" rowspan="1"><ul>
+<li>Power BI Desktop は <a href="https://powerbi.microsoft.com/ja-jp/downloads/" target="_blank">Microsoft Power BI のダウンロード</a> から入手できます</li>
+<li>後半の章で Power BI Desktop を用いたデータの可視化を行いますが、Power BI Desktop は現状 Windows でのみ利用可能です。macOS などをお使いの場合、Power BI Desktop を扱う章はスキップしてください</li>
+</ul>
+</td></tr>
+</table>
+<aside class="warning"><p><strong>⚡ クォータの増加リクエスト</strong></p>
+<p>クォータの増加リクエストは処理されるのに早い場合は数分から数十分、場合によってはもっと時間が掛かる場合があるため、ワークショップ開始前に完了させておくことをお勧めします。</p>
+<p>これからワークショップを始めようという方でクォータの増加リクエストを行っていない場合は、リクエストを行ってから次の章に進みましょう。</p>
+<p>クォータの増加はワークショップ中盤の <strong>[Databricks SQL から ADLS Gen2 への接続 #1]</strong> までに完了している必要がありますが、その章に辿り着くまでに 1 時間程度は掛かります。いまリクエストを行うと、その章までにクォータの増加が完了していることがある程度期待できます。</p>
+</aside>
+<h2 is-upgraded><strong>💮 フィードバック</strong></h2>
+<p>ワークショップのコンテンツは以下の GitHub リポジトリで管理しています。コンテンツに不備を発見した場合はワークショップ講師にお伝え頂くか、以下の GitHub リポジトリの Issue または Pull Request でお知らせ頂けるとありがたいです。</p>
+<p><a href="https://github.com/microsoft/azure-databricks-sql-workshop-ja" target="_blank">https://github.com/microsoft/azure-databricks-sql-workshop-ja</a></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ワークショップで利用するサービスの説明" duration="20">
+        <p>この章では、ワークショップで利用する Microsoft の各種サービス・機能について説明します。これらの概要について既に十分ご存じの場合はスキップして次の章にお進みください。</p>
+<h2 is-upgraded><strong>🔎 主に利用するサービス・機能</strong></h2>
+<p>ワークショップで主に利用するサービス・機能は以下の通りです。それぞれの概要について以降に記載します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>サービス名または機能名</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>概要</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Azure Data Lake Storage Gen2</p>
+</td><td colspan="1" rowspan="1"><p>ビッグデータ分析に最適化されたクラウド オブジェクト ストレージ</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Databricks SQL</p>
+</td><td colspan="1" rowspan="1"><p>Azure Databricks に搭載されたデータ分析機能</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Synapse パイプラインおよびマッピング データ フロー</p>
+</td><td colspan="1" rowspan="1"><p>Azure Synapse Analytics に搭載されたデータ統合機能</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Microsoft Power BI</p>
+</td><td colspan="1" rowspan="1"><p>データの分析・可視化を行う BI 用サービス</p>
+</td></tr>
+</table>
+<h2 is-upgraded><strong>Azure Data Lake Storage Gen2</strong></h2>
+<p>Azure Data Lake Storage Gen2 は、Azure のマネージド型のクラウド オブジェクト ストレージである Azure Storage の一機能です。略称は ADLS Gen2 です。</p>
+<p>ADLS Gen2 は汎用性の高いオブジェクト ストレージである Blob Storage の機能をベースに構築され、ビッグ データ分析に最適化されています。Azure ストレージ アカウントをデプロイする際に階層型名前空間のオプションをオンにすると ADLS Gen2 の機能が利用できます。</p>
+<p class="image-container"><img src="img/5a5c30066cb1aaab.jpg"></p>
+<aside class="special"><p><strong>💡 階層型名前空間について</strong></p>
+<p>ADLS Gen2 の特長の一つは階層型名前空間です。Blob Storage や他のオブジェクト ストレージでは、ファイル名にスラッシュを使用して階層型のディレクトリ構造を模倣しています。</p>
+<p>一方で ADLS Gen2 では、ファイルが実際のディレクトリの配下に編成されています。そのため、ディレクトリの名前変更や移動、削除などの操作は、そのディレクトリに対するアトミックなメタデータ操作になります。他のオブジェクト ストレージではファイル数分の操作が必要になります。</p>
+<p>ビッグ データ分析ではディレクトリの名前変更や移動、削除などの操作を相応の頻度で行いますが、ADLS Gen2 ではこれらの操作を効率的に行えます。</p>
+</aside>
+<h2 is-upgraded><strong>Azure Databricks</strong></h2>
+<p>Azure Databricks は Apache Spark ベースのフル マネージド サービスで、レイクハウス プラットフォームを実現できます。</p>
+<p>レイクハウスは、データ レイクとデータ ウェアハウスからなる造語です。データ レイクの高い経済性、データ ウェアハウスの高い処理性能を併せ持ちます。レイクハウスでは、あらゆるデータをデータ レイク に集約し、Delta Lake や Apache Parquet などの分析に最適化した形式に変換して保持します。</p>
+<p>Azure Databricks は Data Lake Storage をメインのデータ ストアとして、データ エンジニアリング、データ サイエンスと機械学習、そしてデータ分析のユースケースをカバーします。</p>
+<p class="image-container"><img src="img/d6aae66ab840b2b0.jpg"></p>
+<h2 is-upgraded><strong>Databricks SQL</strong></h2>
+<p>Databricks SQL は Azure Databricks に搭載されているデータ分析のための機能で、2021 年 12 月に一般提供になりました。特徴として、クラウド ストレージ上のデータを標準的な SQL で分析できます。さらに SQL の結果を OSS のメジャーなダッシュボード ツール Redash をベースとしたリッチなダッシュボードで可視化できます。</p>
+<p>優れた UI/UX を持つだけでなく、2021 年 11 月に<a href="https://www.databricks.com/jp/blog/2021/11/02/databricks-sets-official-data-warehousing-performance-record.html" target="_blank">ビッグデータ向けのベンチマークの TPC-DS 100TB クラスで世界記録を更新</a>するなど、非常に高い処理性能を兼ね備えています。</p>
+<p class="image-container"><img src="img/6e7fba64e2b8c044.jpg"></p>
+<h2 is-upgraded><strong>Azure Synapse Analytics</strong></h2>
+<p>Azure Synapse Analytics は、エンドツーエンドの分析のための統合クラウド ネイティブ プラットフォームです。図の左側にあるようなオンプレミス、クラウドなど様々なデータを集約し、Synapse スタジオという専用の UI で集中的に分析できます。</p>
+<p>さらに Microsoft Purview や Azure Databricks などの Microsoft の他のサービスとのシームレスな連携機能も特長です。専用 SQL プールやサーバーレス SQL プールなどの分析ランタイムを備えています。</p>
+<p class="image-container"><img src="img/6eac8aa15a943fe2.jpg"></p>
+<h2 is-upgraded><strong>Synapse パイプライン</strong></h2>
+<p>Synapse パイプラインは Azure Synapse Analytics に搭載されたデータ統合機能で、データのコピーや ETL 処理をスケジュールやイベント ベースのトリガーで実行できます。100 以上の組み込みのコネクターを提供しており、Azure の主要なデータ ストアはもちろん、Azure 以外のデータ ストアについてもサポートされています。</p>
+<p>コピー アクティビティという機能を用いてオンプレミスや他のクラウドからデータを Azure にコピーし、後述するマッピング データ フローで ETL (Extract / Transform / Load) を行うユーザーが多いです。</p>
+<p class="image-container"><img src="img/2464c55aa08358c0.jpg"></p>
+<h2 is-upgraded><strong>マッピング データ フロー</strong></h2>
+<p>マッピング データ フローは、変換 (Transformation) と呼ばれるパーツを組合わせて、ノーコードで ETL 処理を作成できる Azure Synapse Analytics の機能です。Synapse パイプラインから呼び出す形で利用します。略称はデータ フローです。</p>
+<p>データ フローの処理は Microsoft マネージドの Spark クラスター上で実行されるため、大規模なデータを扱うことができます。</p>
+<p class="image-container"><img src="img/e27524e97c92ee91.jpg"></p>
+<h2 is-upgraded><strong>Microsoft Power BI</strong></h2>
+<p>Microsoft Power BI はデータを分析・可視化して洞察を得るための BI (Business Intelligence) ツールです。Power BI は大きく Power BI Desktop、Power BI サービス、そして Power BI モバイル / ブラウザから構成されます。</p>
+<p>本ワークショップの後半で Power BI Desktop から Databricks SQL に接続してレポートを作成します。</p>
+<p class="image-container"><img src="img/5fddc3ed9dc6e719.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、ワークショップで利用する Microsoft の各種サービス・機能について学びました。<strong>[Next]</strong> を選択して次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="リソース グループ作成" duration="10">
+        <p>この章では、ワークショップで利用するリソース グループを作成し、受講者に必要な権限を付与します。</p>
+<p>リソース グループとは Azure 上のリソースをまとめて管理するためのものです。リソース グループを指定して複数のリソースをまとめて削除したり、リソース グループ別に課金を確認できたりします。</p>
+<h2 is-upgraded><strong>🤔 複数人でワークショップを受講する場合の考慮点</strong></h2>
+<p>複数人でワークショップを受講する場合、リソース グループの作成にあたって以下 2 つの選択肢があります。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>権限</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>対応</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>代表者のみがリソース グループを作成できる権限を持ち、他の方が権限を持っていない場合</p>
+</td><td colspan="1" rowspan="1"><p><strong>全員で 1 つのリソース グループを共有</strong>し、その中に受講者全員の Azure リソースを作成する</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>受講者全員がリソース グループを作成できる権限を持つ場合</p>
+</td><td colspan="1" rowspan="1"><p><strong>1 人 1 つのリソース グループを作成</strong>し、その中に各受講者の Azure リソースを作成する</p>
+</td></tr>
+</table>
+<p>どちらの方法を選んでも問題ありません。講師と、あるいは参加者同士で相談して、どちらの方法にするかを決めてください。なお、リソース グループ名や Azure リソース名はサブスクリプション内、あるいはグローバルでの一意性が求められることが多いです。この後の手順でも名前が重複しないようガイドしていきますが、この点を意識してセットアップ作業を進めていきましょう。</p>
+<aside class="special"><p><strong>💡 Azure リソースの名前付け規則</strong></p>
+<p>名前付け規則 (命名規則やネーミング ルールとも呼ばれます) は開発者にとって主要な関心事の一つです。Azure では名前付け規則のガイドとなるドキュメントを公開しています。</p>
+<p>自身のプロジェクトで Azure を利用する際には、これらのドキュメントを参考にしつつ、自身のプロジェクトの事情にマッチした名前付け規則を定めるのが良いでしょう。</p>
+<ul>
+<li><a href="https://learn.microsoft.com/ja-jp/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming" target="_blank">名前付け規則を定義する - Cloud Adoption Framework | Microsoft Learn</a></li>
+<li><a href="https://learn.microsoft.com/ja-jp/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations" target="_blank">Azure リソースの省略形の例 - Cloud Adoption Framework | Microsoft Learn</a></li>
+</ul>
+</aside>
+<h2 is-upgraded><strong>1. リソース グループの作成</strong></h2>
+<p><strong>(注: 全員で 1 つのリソース グループを共有する場合は代表者 1 人が実施します)</strong></p>
+<p>(1) Azure ポータル (<a href="https://portal.azure.com" target="_blank">https://portal.azure.com</a>) にサインインします。必要に応じて画面右上の歯車アイコン &gt; <strong>[言語と地域]</strong> からポータルの表示言語を日本語に変更します。</p>
+<p class="image-container"><img src="img/4fa589857b764057.jpg"></p>
+<p>(2) Azure ポータル上部の検索バーに <strong>[リソース グループ]</strong> と入力します。検索結果の <strong>[サービス]</strong> 内の <strong>[リソース グループ]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/bf632db68bb607bc.jpg"></p>
+<p>(3) <strong>[作成]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/62f0326278b08cc7.jpg"></p>
+<p>(4) リソース グループの作成画面で以下の項目を設定し、<strong>[確認および作成]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>サブスクリプション</p>
+</td><td colspan="1" rowspan="1"><p>任意のサブスクリプションを選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リソース グループ</p>
+</td><td colspan="1" rowspan="1"><p>サブスクリプション内で一意の任意の名前を入力します。このワークショップでは <strong><code>rg-adb-ws-{yyyyMMdd}</code></strong> (<strong><code>{yyyyMMdd}</code></strong> はワークショップの実施日で置換) を使用します。<br>注: 1 人 1 つのリソース グループを作成する場合は <strong><code>rg-adb-ws-{yyyyMMdd}-{lastname}</code></strong> (<strong><code>{lastname}</code></strong> は受講者の姓で置換) を使用します。<br><br>例: <strong><code>rg-adb-ws-20221205</code></strong> または <strong><code>rg-adb-ws-20221205-smith</code></strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リージョン</p>
+</td><td colspan="1" rowspan="1"><p>任意のリージョンを選択します。このワークショップでは <strong><code>Japan East</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img alt="リソース グループの作成" src="img/ee52392fda840de3.jpg"></p>
+<p>(5) <strong>[確認および作成]</strong> 画面で検証結果に問題がなければ、<strong>[作成]</strong> をクリックします。通常、すぐに作成が完了します。</p>
+<p class="image-container"><img src="img/70bb9aba09f36f88.jpg"></p>
+<h2 is-upgraded><strong>2. リソース グループへのロールの割り当て</strong></h2>
+<p><strong>(注: 全員で 1 つのリソース グループを共有する場合は代表者 1 人が実施します)</strong></p>
+<p>(1) 先ほど作成したワークショップ用リソース グループにアクセスします。</p>
+<p class="image-container"><img src="img/29684eb6529d45ec.jpg"></p>
+<p>(2) ワークショップ用リソース グループの左側メニューから <strong>[アクセス制御 (IAM)]</strong> &gt; <strong>[追加]</strong> &gt; <strong>[ロールの割り当ての追加]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/c4fee5795e539e99.jpg"></p>
+<p>(3) ロールの割り当ての追加画面で <strong>[所有者]</strong> を選択し <strong>[次へ]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/779876ee754f52bf.jpg"></p>
+<p>(4) <strong>[+ メンバーを選択する]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/8a251067b35260aa.jpg"></p>
+<p>(5) メンバーの選択欄が画面右側に表示されるので、すべてのワークショップ受講者を選択し、<strong>[選択]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/93d430c6b2d3a35.jpg"></p>
+<p>(6) <strong>[レビューと割り当て]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/d72797a885d8372.jpg"></p>
+<p>(7) 再度、<strong>[レビューと割り当て]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/d1ca1c5296994f11.jpg"></p>
+<p>(8) リソース グループの <strong>[アクセス制御 (IAM)]</strong> &gt; <strong>[ロールの割り当て]</strong> を選択し、参加者全員に <strong>[所有者]</strong> のロールが割り当てられていることを確認します。</p>
+<p class="image-container"><img src="img/c95d7654926337ef.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、ワークショップで利用するリソース グループを作成し、参加者全員に <strong>[所有者]</strong> のロールを割り当てました。次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Azure リソース作成" duration="20">
+        <p>この章では、ワークショップで利用する Azure リソースを作成します。</p>
+<h2 is-upgraded><strong>1. Azure Synapse Analytics ワークスペース &amp; Azure ストレージ アカウントの作成</strong></h2>
+<p><strong>(注: ここから先の手順はワークショップの受講者全員が実施します)</strong></p>
+<p>(1) Azure ポータル (<a href="https://portal.azure.com" target="_blank">https://portal.azure.com</a>) にサインインし、検索バーに <strong>[リソース グループ]</strong> と入力してリソース グループ一覧に移動し、ワークショップで利用するリソース グループが表示されることを確認します。</p>
+<p class="image-container"><img src="img/62f1b22f1026827a.jpg"></p>
+<p>(2) Azure ポータル上部の検索バーに <strong>[synapse]</strong> と入力します。検索結果の <strong>[サービス]</strong> 内の <strong>[Azure Synapse Analytics]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/9c667a2853f14051.jpg"></p>
+<p>(3) <strong>[作成]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/a1ab0427e1fd01fc.jpg"></p>
+<p>(4) Synapse ワークスペースの作成画面で以下の項目を設定し、<strong>[次へ: セキュリティ]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>サブスクリプション</p>
+</td><td colspan="1" rowspan="1"><p>任意のサブスクリプションを選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リソース グループ</p>
+</td><td colspan="1" rowspan="1"><p>先の手順で作成したリソース グループ <strong><code>rg-adb-ws-{yyyyMMdd}</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>マネージド リソース グループ</p>
+</td><td colspan="1" rowspan="1"><p>空白のままにします。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ワークスペース名</p>
+</td><td colspan="1" rowspan="1"><p>グローバルに一意の任意の名前を入力します。このワークショップでは <strong><code>syn-adb-ws-{lastname}-{yyyyMMdd}</code></strong> (<strong><code>{lastname}</code></strong> は受講者の姓で置換、<strong><code>{yyyyMMdd}</code></strong> はワークショップの実施日で置換) を使用します。<br><br>例: <strong><code>syn-adb-ws-smith-20221205</code></strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>地域</p>
+</td><td colspan="1" rowspan="1"><p>任意のリージョンを選択します。このワークショップでは <strong><code>Japan East</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Data Lake Storage Gen2 を選択する</p>
+</td><td colspan="1" rowspan="1"><p><strong>[サブスクリプションから]</strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>アカウント名</p>
+</td><td colspan="1" rowspan="1"><p><strong>[新規作成]</strong> を選択し、グローバルに一意の任意の名前を入力します。このワークショップでは <strong><code>stadbws{lastname}{yyyyMMdd}</code></strong> を使用します。<br><br>例: <strong><code>stadbwssmith20221205</code></strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ファイル システム名</p>
+</td><td colspan="1" rowspan="1"><p><strong>[新規作成]</strong> を選択し、任意の名前を入力します。このワークショップでは <strong><code>synapse</code></strong> を使用します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/9b044b9d9892e664.jpg"></p>
+<aside class="special"><p><strong>💡 Synapse ワークスペースと Azure ストレージ アカウントの命名の制約</strong></p>
+<p>以下の制約を守ったリソース名にする必要があることに注意してください。</p>
+<ul>
+<li>Synapse ワークスペースとストレージ アカウントはグローバルで一意な名前でなければならない</li>
+<li>Synapse ワークスペース名は 50 文字以内、小文字・数字・ハイフンが利用可能</li>
+<li>ストレージ アカウントは 23 文字以内、小文字・数字が利用可能 (ハイフンなどの記号は利用不可)</li>
+</ul>
+</aside>
+<p>(5) <strong>[セキュリティ]</strong> 画面で以下の項目を設定し、<strong>[確認および作成]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>認証方法</p>
+</td><td colspan="1" rowspan="1"><p><strong>[Azure Active Directory (Azure AD) 認証のみを使用する]</strong> を選択します。<br>備考: 本ワークショップでは SQL プールは利用しません。余分な入力を省くため、最もシンプルな認証方法を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/d0ea8bfdff4eb0e6.jpg"></p>
+<p>(6) <strong>[確認および作成]</strong> 画面で検証結果に問題がなければ、<strong>[作成]</strong> をクリックします。通常 3-5 分で作成が完了します。次のステップに進みましょう。</p>
+<p class="image-container"><img src="img/909397ff051ccd9.jpg"></p>
+<h2 is-upgraded><strong>2. Azure Databricks ワークスペース作成</strong></h2>
+<p>(1) Azure ポータル上部の検索バーに <strong>[databricks]</strong> と入力します。検索結果の <strong>[サービス]</strong> 内の <strong>[Azure Databricks]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/7ac8259003d16ef8.jpg"></p>
+<p>(2) <strong>[作成]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/4082de55c5ebed92.jpg"></p>
+<p>(3) Azure Databricks サービスの作成画面で以下の項目を設定し、<strong>[確認および作成]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>サブスクリプション</p>
+</td><td colspan="1" rowspan="1"><p>任意のサブスクリプションを選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リソース グループ</p>
+</td><td colspan="1" rowspan="1"><p>先の手順で作成したリソース グループ <strong><code>rg-adb-ws-{yyyyMMdd}</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ワークスペース 名</p>
+</td><td colspan="1" rowspan="1"><p>サブスクリプション内で一意の任意の名前を入力します。このワークショップでは <strong><code>adb-ws-{lastname}-{yyyyMMdd}</code></strong> を使用します。<br><br>例: <strong><code>adb-ws-smith-20221205</code></strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リージョン</p>
+</td><td colspan="1" rowspan="1"><p>任意のリージョンを選択します。このワークショップでは <strong><code>Japan East</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>価格レベル</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Premium</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/45e9142cd5843d98.jpg"></p>
+<aside class="special"><p><strong>💡 Azure Databricks の価格レベル</strong></p>
+<p>Azure Databricks には、以下の 2 つの価格レベルがあります。詳細は <a href="https://www.databricks.com/jp/product/azure-pricing" target="_blank">Azure Databricks Pricing - Databricks</a> を参照してください。</p>
+<ul>
+<li><strong>Standard</strong> - Databricks の基本的な機能を利用できる価格レベルです。</li>
+<li><strong>Premium</strong> - Azure Databricks の最上位の価格レベルで、Databricks のすべての機能を利用できます。本ワークショップで扱う Databricks SQL は Premium レベルで利用可能な機能です。</li>
+</ul>
+</aside>
+<p>(4) <strong>[確認および作成]</strong> 画面で検証結果に問題がなければ、<strong>[作成]</strong> をクリックします。通常 3-5 分で作成が完了します。次のステップに進みましょう。</p>
+<p class="image-container"><img src="img/7ce079e55d203efa.jpg"></p>
+<h2 is-upgraded><strong>3. Azure Key Vault の作成</strong></h2>
+<p>後続の手順でシークレット文字列をセキュアに扱えるように、Azure Key Vault を作成します。</p>
+<p>(1) Azure ポータル上部の検索バーに <strong>[key vault]</strong> と入力します。検索結果の <strong>[サービス]</strong> 内の <strong>[キー コンテナー]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/946913dc78b67a21.jpg"></p>
+<p>(2) <strong>[作成]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/37b8482f75aec32.jpg"></p>
+<p>(3) キー コンテナーの作成画面で以下の項目を設定し、<strong>[確認および作成]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>サブスクリプション</p>
+</td><td colspan="1" rowspan="1"><p>任意のサブスクリプションを選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リソース グループ</p>
+</td><td colspan="1" rowspan="1"><p>先の手順で作成したリソース グループ <strong><code>rg-adb-ws-{yyyyMMdd}</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Key Vault 名</p>
+</td><td colspan="1" rowspan="1"><p>グローバルに一意の任意の名前を入力します。このワークショップでは <strong><code>kv-adb-ws-{lastname}-{yyyyMMdd}</code></strong> を使用します。<br><br>例: <strong><code>kv-adb-ws-smith-20221205</code></strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>地域</p>
+</td><td colspan="1" rowspan="1"><p>任意のリージョンを選択します。このワークショップでは <strong><code>Japan East</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>価格レベル</p>
+</td><td colspan="1" rowspan="1"><p>標準を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>削除されたコンテナーを保持する日数</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>7</code></strong> に変更します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>消去保護</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>消去保護を無効にする</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/25c8c56eae2fb05b.jpg"></p>
+<p>(4) <strong>[確認および作成]</strong> 画面で検証結果に問題がなければ、<strong>[作成]</strong> をクリックします。通常 1-2 分で作成が完了します。</p>
+<p class="image-container"><img src="img/95bff4caf32ae74e.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では以下の Azure リソースを作成しました。問題なく作成できていることを確認して、次の章に進みましょう。</p>
+<ol type="1">
+<li>Azure Synapse Analytics ワークスペース</li>
+<li>Azure ストレージ アカウント (ADLS Gen2)</li>
+<li>Azure Databricks ワークスペース</li>
+<li>Azure Key Vault</li>
+</ol>
+<p class="image-container"><img src="img/7f1bef2de38c0a46.jpg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="データの概要" duration="10">
+        <p>この章では、分析対象として利用する E コマースのサンプル データの概要を確認します。</p>
+<h2 is-upgraded><strong>🔎 分析対象として利用するデータの概要</strong></h2>
+<p>Kaggle に公開されている E コマースのサンプル データ「<a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce" target="_blank">Brazilian E-Commerce Public Dataset by Olist</a>」を利用します。データ スキーマは以下の通りです。</p>
+<p><img src="img/c9dd80fad2e93e40.jpg"> (* Brazilian E-Commerce Public Dataset by Olist は <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ja" target="_blank">クリエイティブ・コモンズ 表示 - 非営利 - 継承 4.0 国際 (CC BY-NC-SA 4.0)</a> の下で提供されています)</p>
+<p>上記データ スキーマのうち、本ワークショップでは主に以下の 2 つのデータセットを利用します。</p>
+<ul>
+<li><code>olist_orders_dataset</code> : 注文データ</li>
+<li><code>olist_order_items_dataset</code> : 注文明細データ</li>
+</ul>
+<p><a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce?select=olist_orders_dataset.csv" target="_blank">Kaggle のデータセットの説明のページ</a>にアクセスして、上記のデータセットの概要 (どのような列があるか、各列のデータ型や値の例など) を確認しましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="データの配置" duration="40">
+        <p>この章では、Synapse パイプラインのコピー アクティビティを用いて、分析対象のデータを Azure Data Lake Storage (ADLS) Gen2 に配置します。</p>
+<h2 is-upgraded><strong>🔎 データ変換の流れ</strong></h2>
+<p>この章で実現するデータ変換の流れは以下の通りです。</p>
+<p class="image-container"><img src="img/bb23043c64e8a73b.jpg"></p>
+<h2 is-upgraded><strong>1. ストレージ アカウントのコンテナー作成</strong></h2>
+<p>はじめに、分析対象のデータを格納するための領域 (コンテナー) をストレージ アカウントに作成します。</p>
+<p>(1) Azure ポータルにアクセスし、ワークショップで利用するリソース グループを選択します。リソース グループから自身が利用するストレージ アカウントを選択します。</p>
+<p class="image-container"><img src="img/99e50376e709f1e8.jpg"></p>
+<p>(2) 左側メニューの <strong>[ストレージ ブラウザー (プレビュー)]</strong> &gt; <strong>[BLOB コンテナー]</strong> &gt; <strong>[+ コンテナーを追加する]</strong> をクリックします。画面右側に <strong>[新しいコンテナー]</strong> が表示されますので、以下の設定を行い、<strong>[作成]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>名前</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>olist-brazilian-ecommerce</code></strong> と入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>パブリック アクセス レベル</p>
+</td><td colspan="1" rowspan="1"><p>既定の <strong><code>プライベート (匿名アクセスはありません)</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/5b616ef90b590e08.jpg"></p>
+<h2 is-upgraded><strong>2. Synapse Studio への接続</strong></h2>
+<p>(1) Azure ポータルにアクセスし、ワークショップで利用するリソース グループを選択します。リソース グループから自身が利用する Synapse ワークスペースを選択します。</p>
+<p>(2) 左側メニューの <strong>[概要]</strong> が選択されていることを確認し、画面中央の <strong>[Synapse Studio を開く]</strong> の中の <strong>[オープン]</strong> というリンクをクリックします。別タブで <strong>Synapse Studio</strong> が開きます。</p>
+<p class="image-container"><img src="img/5eff46827b517065.jpg"></p>
+<p>(3) はじめて Synapse Studio に接続する際、画面上部にオプションの cookie 使用についての通知が表示されるので、特に問題がなければ <strong>[同意]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/bcc36cf467fc7aef.jpg"></p>
+<aside class="special"><p><strong>💡 Synapse Studio の「ハブ」</strong></p>
+<p>Synapse Studio の左側メニューは既定では折りたたみされており、画面左上の <code>>></code> を選択すると表示されます。Synapse Studio では左側メニューの一つ一つの機能を <strong>ハブ</strong> と呼びます。以降の手順では「Data ハブ」、「Develop ハブ」、「Integrate ハブ」などと呼称します。</p>
+<p class="image-container"><img src="img/4aee3b8f78268da3.jpg"></p>
+</aside>
+<h2 is-upgraded><strong>3. コピー アクティビティによるデータの配置</strong></h2>
+<p>分析対象のデータを Zip にまとめたファイルを <a href="https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip" target="_blank">GitHub リポジトリ</a>に格納していますので、そちらを ADLS Gen2 にコピーします。</p>
+<p>具体的な手順として、Synapse Studio にてリンク サービス、データセット、パイプラインを作成し、パイプラインにコピー アクティビティを定義して、パイプラインを実行します。</p>
+<aside class="special"><p><strong>💡 Synapse パイプラインの用語</strong></p>
+<p>これから扱う Synapse パイプラインの用語について簡単に説明します。詳細は <a href="https://learn.microsoft.com/ja-jp/azure/data-factory/concepts-datasets-linked-services?tabs=data-factory" target="_blank">データセット - Azure Data Factory &amp; Azure Synapse | Microsoft Learn</a> を参照してください。</p>
+<ul>
+<li>リンク サービス: Synapse が外部リソースに接続するために必要な接続情報を定義する</li>
+<li>データセット: コピー アクティビティなどのパイプライン アクティビティで利用するデータの入出力先 (テーブルやファイルなど) を定義する</li>
+<li>パイプライン: 1 つ以上のパイプライン アクティビティを組み合わせて、データの加工や移動を行う処理を定義する</li>
+</ul>
+<p class="image-container"><img src="img/69ea7e3d9367ad9b.png"></p>
+</aside>
+<h3 is-upgraded><strong>3-1. リンク サービスの作成</strong></h3>
+<p>まずはコピー元の Zip ファイルがある GitHub リポジトリの接続情報を定義したリンク サービスを作成します。</p>
+<p>(1) Synapse スタジオで <strong>[Manage]</strong> ハブ &gt; <strong>[Linked services]</strong> &gt; <strong>[+ 新規]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/33d9c3ed543114e4.jpg"></p>
+<p>(2) 検索ボックスに <code>http</code> と入力します。候補として <strong>[HTTP]</strong> が表示されるので選択し <strong>[続行]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/df82b7d5e34aeaa8.jpg"></p>
+<p>(3) 新しいリンク サービスの作成画面で以下の項目を設定し、<strong>[テスト接続]</strong> をクリックします。<strong>接続成功</strong> と表示されたら <strong>[作成]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>名前</p>
+</td><td colspan="1" rowspan="1"><p>任意の名前を入力します。このワークショップでは <strong><code>HttpGitHubAdbWorkshop</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ベース URL</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>https://github.com/microsoft/azure-databricks-sql-workshop-ja/</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>認証の種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>匿名</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/eb3f9f3d71c1b541.jpg"></p>
+<p>(4) 画面上部の <strong>[すべて発行]</strong>　(保存に相当する操作) をクリックします。確認画面が表示されるので <strong>[発行]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/436e8dd55dca86dc.jpg"></p>
+<p>これでリンク サービスの作成は完了です。以降、データセットとパイプラインを作成していきますが、作業結果が途中で消えてしまわないように、キリの良いタイミングでこまめに <strong>[すべて発行]</strong> を実行するようにしましょう。</p>
+<h3 is-upgraded><strong>3-2. データセット (コピー元) の作成</strong></h3>
+<p>続いてコピー元とコピー先のデータセットを作成します。まずはコピー元 (GitHub に格納された Zip ファイル) に対応するデータセットを作成します。</p>
+<p>(1) Synapse スタジオで <strong>[Data]</strong> ハブにアクセスした後、<strong>[+]</strong> ボタンをクリックし、<strong>[統合データセット]</strong> を選択します。</p>
+<p class="image-container"><img src="img/969709d79e2a95c8.jpg"></p>
+<p>(2) 検索ボックスに <code>http</code> と入力します。候補として <strong>[HTTP]</strong> が表示されるので選択し <strong>[続行]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/49fbd0aa070d6daf.jpg"></p>
+<p>(3) 形式の選択画面で <strong>[バイナリ]</strong> を選択し <strong>[続行]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/1ebe2b62b10a1a89.jpg"></p>
+<p>(4) プロパティの設定画面で以下の項目を設定し、<strong>[OK]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>名前</p>
+</td><td colspan="1" rowspan="1"><p>任意の名前を入力します。このワークショップでは <strong><code>CopySourceDataset</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リンク サービス</p>
+</td><td colspan="1" rowspan="1"><p>先ほど作成したリンク サービス <strong><code>HttpGitHubAdbWorkshop</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>相対 URL</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>raw/main/assets/olist-brazillian-ecommerse-dataset.zip</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/bf13eb1e40c6271a.jpg"></p>
+<p>(5) 作成されたデータセットの <strong>[接続]</strong> タブの <strong>[圧縮の種類]</strong> を <code>ZipDelfate (.zip)</code> に変更します。</p>
+<p class="image-container"><img src="img/e43c8adf06988427.jpg"></p>
+<p>これでコピー元のデータセットの作成は完了ですので、発行しておきましょう。</p>
+<h3 is-upgraded><strong>3-3. データセット (コピー先) の作成</strong></h3>
+<p>続いてコピー先 (ADLS Gen2 の CSV ファイル群) に対応するデータセットを作成します。</p>
+<p>(1) Synapse スタジオで <strong>[Data]</strong> ハブにアクセスした後、<strong>[+]</strong> ボタンをクリックし、<strong>[統合データセット]</strong> を選択します。</p>
+<p>(2) 検索ボックスに <code>gen2</code> と入力します。候補として <strong>[Azure Data Lake Storage Gen2]</strong> が表示されるので選択し <strong>[続行]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/118bac91f5643bf3.jpg"></p>
+<p>(3) 形式の選択画面で <strong>[バイナリ]</strong> を選択し <strong>[続行]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/d4245c120fb62659.jpg"></p>
+<p>(4) プロパティの設定画面で以下の項目を設定し、<strong>[OK]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>名前</p>
+</td><td colspan="1" rowspan="1"><p>任意の名前を入力します。このワークショップでは <strong><code>CopyTargetDataset</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リンク サービス</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>{Synapse ワークスペース名}-WorkspaceDefaultStorage</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ファイル パス</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダ名に <strong><code>raw</code></strong> を入力します。(ファイル名は空白のままで OK です)</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/8d96b37abb3342cd.jpg"></p>
+<p>これでコピー先のデータセットの作成は完了です。発行しておきましょう。</p>
+<aside class="special"><p><strong>💡 Azure Synapse Analytics のプライマリ ADLS Gen2 アカウント</strong></p>
+<p>前章で Synapse ワークスペースを作成する際に、既存あるいは新規の ADLS Gen2 のストレージ アカウントとファイル システムを指定しました。Synapse はこれらを <strong>プライマリ ADLS Gen2 アカウント</strong> および <strong>プライマリ ADLS Gen2 ファイル システム</strong> として扱います。</p>
+<p>プライマリ ADLS Gen2 アカウントに対応するリンク サービス (<code>{Synapse ワークスペース名}-WorkspaceDefaultStorage</code>) は Synapse ワークスペース作成時に自動的に作成されます。プライマリ ADLS Gen2 ファイル システムには Synapse の管理用の情報が保存されます。</p>
+</aside>
+<aside class="special"><p><strong>💡 データ レイクを設計する際のストレージ アカウントの分け方</strong></p>
+<p>本ワークショップでは手順の簡単化のため Synapse のプライマリ ADLS Gen2 アカウントをデータの永続化先として利用しますが、実際の利用シーンではストレージ アカウントごとにネットワーク セキュリティ設定やアクセス制御 (IAM)、冗長性、アクセス層などを設定します。そのため利用者や扱うデータ、アクセス パターンなどのニーズに合わせてストレージ アカウントを必要に応じて複数個作成・管理するのが一般的です。</p>
+<p>データ レイクを設計する際のストレージ アカウントの分け方については一大トピックになるため本ワークショップでは詳しく触れませんが、実際に設計する際には以下のドキュメントをヒントにしつつ、皆さんのニーズに合わせて検討頂くのが良いと思います。</p>
+<ul>
+<li><a href="https://learn.microsoft.com/ja-jp/azure/cloud-adoption-framework/scenarios/cloud-scale-analytics/best-practices/data-lake-overview" target="_blank">Azure Data Lake Storage - Cloud Adoption Framework | Microsoft Learn</a></li>
+<li><a href="https://speakerdeck.com/ryomaru0825/whats-data-lake-azure-data-lake-best-practice" target="_blank">What&#39;s Data Lake ? Azure Data Lake best practice - Speaker Deck (Microsoft MVP for Data Platform の Ryoma Nagata さんのスライド)</a></li>
+</ul>
+</aside>
+<h3 is-upgraded><strong>3-4. パイプラインの作成と実行</strong></h3>
+<p>最後にコピー アクティビティを含むパイプラインを作成した後、パイプラインを実行します。</p>
+<p>(1) Synapse スタジオで <strong>[Integrate]</strong> ハブにアクセスした後、<strong>[+]</strong> ボタンをクリックし、<strong>[パイプライン]</strong> を選択します。</p>
+<p class="image-container"><img src="img/2d35bee1c0a62d0f.jpg"></p>
+<p>(2) パイプラインのプロパティで <strong>[名前]</strong> に <code>CopyAndUnzipDataset</code> を入力します。作業領域を広くするため以下の画面キャプチャ内の赤枠で囲んだボタンをクリックしてプロパティを折りたたみます。</p>
+<p class="image-container"><img src="img/88ee75e740e41ea9.jpg"></p>
+<p>(3) パイプラインのアクティビティ一覧の <strong>[移動と変換]</strong> セクションを展開し <strong>[データのコピー]</strong> を右側のキャンバスにドラッグ &amp; ドロップします。</p>
+<p class="image-container"><img src="img/c31a288c338a1dc0.jpg"></p>
+<p>(4) キャンバス上のコピー アクティビティを選択し、<strong>[ソース]</strong> タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ソース データセット</p>
+</td><td colspan="1" rowspan="1"><p>先ほど作成した <strong><code>CopySourceDataset</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>zip ファイル名をフォルダーとして保持する</p>
+</td><td colspan="1" rowspan="1"><p>チェックを外します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/f3cbd97adf4daedb.jpg"></p>
+<p>(5) 続いて <strong>[シンク]</strong> タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>シンク データセット</p>
+</td><td colspan="1" rowspan="1"><p>先ほど作成した <strong><code>CopyTargetDataset</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/f45fe2de568bdd81.jpg"></p>
+<p>(6) 以上でパイプラインの作成は完了です。画面上部の <strong>[デバッグ]</strong> をクリックします。パイプラインが実行されますので、以下の画面キャプチャ内の赤枠で囲んだボタンを定期的にクリックして表示を更新し、状態が <code>成功</code> になるまで待ちます。</p>
+<p class="image-container"><img src="img/eda125762979ede2.jpg"></p>
+<p>(7) 状態が <code>成功</code> になったらパイプラインの実行結果を確認します。以下の画面キャプチャ内の赤枠で囲んだアイコン (マウスを近づけると表示されます) をクリックします。</p>
+<p class="image-container"><img src="img/ce6e5c7ea172804f.jpg"></p>
+<p>(8) パイプラインの実行結果が表示されます。コピー元、コピー先のデータ サイズ、ファイル数が以下キャプチャの内容と一致することを確認します。問題なければ右上の <strong>[×]</strong> をクリックして閉じます。</p>
+<p class="image-container"><img src="img/3354aa7cc8306381.jpg"></p>
+<p>(9) Synapse スタジオの <strong>[Data]</strong> ハブを開き、以下キャプチャの通り、ADLS Gen2 に CSV ファイル群がコピーされていることを確認します。</p>
+<p class="image-container"><img src="img/877b1622bd38b74b.jpg"></p>
+<p>以上でパイプラインの作成と実行は完了です。発行しておきましょう。</p>
+<h2 is-upgraded>4. <strong>(オプション) 手動でのデータ配置</strong></h2>
+<p>以下は Synapse パイプラインのコピー アクティビティではなく手動でデータを配置する手順です。コピー アクティビティでデータを配置済みの場合、この手順はスキップしてください。</p>
+<p>(1) 以下 URL にアクセスし、<strong>[Download]</strong> をクリックし、データセットの Zip ファイルをダウンロードします。 <a href="https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip" target="_blank">https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip</a></p>
+<p class="image-container"><img src="img/580959ee6c6d8954.jpg"></p>
+<p>(2) Zip ファイルを展開します。</p>
+<p class="image-container"><img src="img/2f2f1d4e97ecac26.jpg"></p>
+<p>(3) Azure ポータルで自身が利用するストレージ アカウントで、左側メニュー <strong>[ストレージ ブラウザー (プレビュー)]</strong> にアクセスし、コンテナー <code>olist-brazilian-ecommerce</code> を選択します。</p>
+<p>(4) <strong>[ディレクトリの追加]</strong> を選択します。画面右側に <strong>[ディレクトリの追加]</strong> が表示されますので、<strong>[名前]</strong> に <strong><code>raw</code></strong> と入力し、<strong>[保存]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/9522f44fb68b1a3.jpg"></p>
+<p>(5) <code>raw</code> ディレクトリを選択します。<strong>[アップロード]</strong> &gt; <strong>[ファイルの参照]</strong> をクリックし、手元にダウンロード &amp; 展開した CSV ファイル群をアップロードします。</p>
+<p class="image-container"><img src="img/f0faada4ef26f25.jpg"></p>
+<p>(一度に複数ファイルをアップロードできます)</p>
+<p class="image-container"><img src="img/4e3a25819714c50d.jpg"></p>
+<p>(6) アップロードした CSV ファイル群が以下のように表示されます。 <img src="img/af04a30b18d4ae34.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、分析対象として利用するデータの内容を確認し、Azure Data Lake Storage (ADLS) Gen2 に配置しました。内容的にはここで一区切りになります。ここまで休憩を取らずに進めている場合、少し休憩を取ってリフレッシュしてから、次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Databricks ワークスペースへの接続" duration="10">
+        <p>この章では、Databricks ワークスペースに接続し、必要に応じて表示言語を日本語に変更します。</p>
+<h2 is-upgraded><strong>1. Databricks ワークスペースに接続</strong></h2>
+<p>(1) Azure ポータルにアクセスし、ワークショップで利用するリソース グループを選択します。リソース グループから自身が利用する Azure Databricks サービスを選択します。</p>
+<p class="image-container"><img src="img/203054a4e6ae5936.jpg"></p>
+<p>(2) 画面中央の <strong>[ワークスペースの起動]</strong> をクリックします。別タブで Azure Databricks ワークスペースが開きます。</p>
+<p class="image-container"><img src="img/a59fffb930fe6828.jpg"></p>
+<p>(3) 利用目的に関するアンケートが表示されますが、必須ではないため <strong>[Finish]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/cfab76f796e5631d.jpg"></p>
+<h2 is-upgraded><strong>2. Databricks ワークスペースの日本語化 (オプション)</strong></h2>
+<p>Databricks ワークスペースの表示言語を日本語に変更します。英語のままでもワークショップの進行的には問題ありませんので、必要に応じて実施してください。</p>
+<p>(1) 画面右上のユーザー名をクリックし、<strong>[User Settings]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/4e9cb1ebaa980641.jpg"></p>
+<p>(2) <strong>[Language settings]</strong> タブを選択し、<strong>[Change your language]</strong> のリスト ボックスから <strong>[日本語]</strong> を選択します。</p>
+<p class="image-container"><img src="img/190afd46ae0a13e2.jpg"></p>
+<p>(3) 自動的に画面が更新され、日本語の表示に変更されます。</p>
+<p class="image-container"><img src="img/4792895e1a4a6e60.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、Databricks ワークスペースに接続し、必要に応じて表示言語を日本語に変更しました。次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Databricks SQL から ADLS Gen2 への接続 #1" duration="30">
+        <p>この章では、Databricks SQL から ADLS Gen2 に接続し、前の章で配置した CSV ファイル群に対して SQL クエリを実行します。</p>
+<h2 is-upgraded><strong>🤔 Databricks SQL から ADLS Gen2 に接続する際の認証方式について</strong></h2>
+<p>Databricks SQL から ADLS Gen2 に接続する際、以下 4 つの認証方式が利用できます。</p>
+<ol type="1">
+<li>Unity Catalog による資格情報の管理</li>
+<li>Azure サービス プリンシパル</li>
+<li>SAS トークン</li>
+<li>アカウント キー</li>
+</ol>
+<p>各認証方式の詳細については以下ドキュメントを参照してください。<br><a href="https://learn.microsoft.com/ja-jp/azure/databricks/external-data/azure-storage" target="_blank">https://learn.microsoft.com/ja-jp/azure/databricks/external-data/azure-storage</a></p>
+<p>商用環境では Unity Catalog による資格情報の管理、または Azure サービス プリンシパルを利用することが推奨されています。いずれの方式もセットアップにあたって Azure Active Directory の操作が必要となります。</p>
+<p>本ワークショップでは、受講者が Azure Active Directory の操作に必要な権限を持っていない可能性があるため、ストレージ アカウントのアカウント キーを用いた認証方式を利用します。まずは本章でアカウント キーを Databricks SQL でそのまま利用して接続確認を行い、次の章で Key Vault にシークレットとして格納する方法を試します。</p>
+<aside class="special"><p><strong>💡 シークレット</strong></p>
+<p>ストレージ アカウントのアカウント キーや接続文字列、パスワードのような機密情報を<strong>シークレット</strong>と呼びます。シークレットは、Azure Key Vault に格納して管理することが推奨されています。Key Vault にシークレットを格納することで、シークレットの管理が容易になり、シークレットの盗難や漏洩のリスクを低減することができます。</p>
+<p>Key Vault の概要については以下ドキュメントを参照してください。<br><a href="https://learn.microsoft.com/ja-jp/azure/key-vault/general/overview" target="_blank">https://learn.microsoft.com/ja-jp/azure/key-vault/general/overview</a></p>
+</aside>
+<h2 is-upgraded><strong>1. アカウント キーの取得</strong></h2>
+<p>(1) テキスト エディターを開き、以下のスニペットをコピー &amp; ペーストし、<code>{storage-account}</code> を以前の章で作成したストレージ アカウント名に置き換えます。(置換後の文字列に <code>{}</code> を含める必要はありません)</p>
+<pre><code>spark.hadoop.fs.azure.account.key.{storage-account}.dfs.core.windows.net {account-key}
+</code></pre>
+<p>(2) Azure ポータルにアクセスし、ワークショップで利用するリソース グループを選択します。リソース グループから自身が利用するストレージ アカウントを選択します。</p>
+<p class="image-container"><img src="img/67d3ed8ffefbe65b.jpg"></p>
+<p>(3) 左側メニューの <strong>[アクセス キー]</strong> をクリックします。<strong>[Key1]</strong> の右横の <strong>[表示]</strong> をクリックし、アカウント キーをコピーします。</p>
+<p class="image-container"><img src="img/44b5f453aea2b3cc.jpg"></p>
+<p>(キーの右端のアイコンをクリックすることで、アカウント キーをコピーできます)</p>
+<p class="image-container"><img src="img/6de95af3cfb78c4c.jpg"></p>
+<p>(4) コピーしたアカウント キーを用いて (1) の <code>{account-key}</code> を置き換えます。(置換後の文字列に <code>{}</code> を含める必要はありません)</p>
+<h2 is-upgraded><strong>2. Databricks SQL ウェアハウスの設定</strong></h2>
+<p>(1) Databricks ワークスペースの画面左上のペルソナ スイッチャーから <strong>[SQL]</strong> を選択します。</p>
+<p class="image-container"><img src="img/cb6552f6670f4ea5.jpg"></p>
+<aside class="special"><p><strong>💡 ペルソナとペルソナ スイッチャー</strong></p>
+<p>Databricks ではユーザーの役割に応じて画面が分かれています。それぞれの画面を<strong>ペルソナ</strong>と呼び、画面を切り替える機能を<strong>ペルソナ スイッチャー</strong>と呼びます。現時点で用意されているペルソナは以下の 3 つです。よく使うペルソナをピン留めすることができます。</p>
+<ol type="1">
+<li><strong>Data Science &amp; Engieering</strong> : データ エンジニアリング、データ サイエンス向けのペルソナです。既定ではこのペルソナが表示されます。Jupyter ライクなノートブックを利用したデータの処理や分析、Spark ジョブの実行などができます。</li>
+<li><strong>Machine Learning</strong> : 機械学習関連のペルソナです。機械学習のモデルや実験の管理ができます。</li>
+<li><strong>SQL</strong> : データ分析向けのペルソナです。SQL クエリを実行したり、ダッシュボードでデータを可視化したりできます。</li>
+</ol>
+</aside>
+<p>(2) 画面右上のユーザー名を選択し、<strong>[SQL 管理コンソール]</strong> &gt; <strong>[SQL ウェアハウスの設定]</strong> を選択します。</p>
+<p class="image-container"><img src="img/6ce23b1ae1fdd634.jpg"></p>
+<p>(3) <strong>[データ アクセス設定]</strong> にテキスト エディターの内容をコピー &amp; ペーストし、<strong>[変更を保存]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/85cde439f5ec28f8.jpg"></p>
+<p>(4) Databricks ワークスペースの左側メニューから <strong>[SQL ウェアハウス]</strong> を選択します。最初から存在するウェアハウス <code>Starter Warehouse</code> の三点をクリックし <strong>[編集]</strong> を選択します。</p>
+<p class="image-container"><img src="img/cc2a3b625ca0c696.jpg"></p>
+<p>(5) <strong>[クラスター サイズ]</strong> を最も小さいサイズである <strong>XXS</strong> に変更し、<strong>[Type]</strong> を安価かつ基本的な機能を備えた <strong>クラシック</strong> に変更します。Type 変更時に <code>Workloads will be inpacted!</code> という警告のダイアログが出ますが、<strong>[Confirm]</strong> をクリックします。右上の <strong>[保存]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/6271eb9ffddd974c.jpg"></p>
+<p>(6) <strong>[開始]</strong> をクリックします。ステータスが <strong>開始中</strong> になります。約 3-5 分で <strong>実行中</strong> になります。</p>
+<p class="image-container"><img src="img/250f301ebbe4d102.jpg"></p>
+<aside class="warning"><p><strong>⚡ SQL ウェアハウスの起動に失敗する場合</strong></p>
+<p>SQL ウェアハウスの開始直後に以下のようなエラーが表示される場合があります。SQL ウェアハウスで利用される Azure 仮想マシンの vCPU 数がサブスクリプションで定められた上限 (クォータ) を超えていることが原因です。5 分ほど経っても SQL ウェアハウスのステータスが実行中にならない場合、クォータを増やす必要があります。</p>
+<p>増加対象のクォータについては最初の章 <strong>[始める前に]</strong> の前提条件のセクションを参照してください。</p>
+<pre><code>Clusters are failing to launch. Cluster launch will be retried.
+Details for the latest failure: Error: Error code: QuotaExceeded, error message: Operation could not be completed as it results in exceeding approved Total Regional Cores quota. Additional details - Deployment Model: Resource Manager, Location: japaneast, Current Limit: 20, Current Usage: 16, Additional Required: 8, (Minimum) New Limit Required: 24.
+</code></pre>
+<p class="image-container"><img src="img/2249049db640015.jpg"></p>
+</aside>
+<h2 is-upgraded><strong>3. Databricks SQL でのクエリ実行</strong></h2>
+<p>(1) SQL ウェアハウスのステータスが <strong>実行中</strong> になったら、画面左側メニューの <strong>[SQL エディタ]</strong> にアクセスします。以下のクエリをコピー &amp; ペーストして LOCATION 句の <code>{storage-account-name}</code> 2 か所を書き換え、<strong>[すべてを実行]</strong> をクリックします。これらのクエリにより、<code>olist_raw</code> データベース (またはスキーマとも呼びます) および <code>orders</code> テーブル、<code>order_items</code> テーブルが作成されます。</p>
+<pre><code language="language-sql" class="language-sql">CREATE DATABASE IF NOT EXISTS olist_raw;
+
+CREATE TABLE IF NOT EXISTS olist_raw.orders
+USING CSV
+OPTIONS (HEADER true, INFERSCHEMA true)
+LOCATION &#39;abfss://olist-brazilian-ecommerce@{storage-account-name}.dfs.core.windows.net/raw/olist_orders_dataset.csv&#39;;
+
+CREATE TABLE IF NOT EXISTS olist_raw.order_items
+USING CSV
+OPTIONS (HEADER true, INFERSCHEMA true)
+LOCATION &#39;abfss://olist-brazilian-ecommerce@{storage-account-name}.dfs.core.windows.net/raw/olist_order_items_dataset.csv&#39;;
+</code></pre>
+<p>(2) スキーマ ブラウザーに作成したデータベースとテーブルが表示されることを確認します。(データベース名が表示されない場合はキャプチャ赤枠のボタンをクリックして表示を更新します)</p>
+<p class="image-container"><img src="img/edb291dc5d1f8f.jpg"></p>
+<p>(3) <code>olist_raw.orders</code> テーブルに対して以下のクエリを 1 つずつ実行して、データ内容と件数が取得できることを確認します。Shift キーを押しながら実行したい SQL を選択して Enter キーを押すと、選択した SQL のみを実行できます。</p>
+<pre><code language="language-sql" class="language-sql">SELECT * FROM olist_raw.orders LIMIT 5;
+
+-- カウント結果として 99441 件が表示されることを確認
+SELECT COUNT(*) FROM olist_raw.orders;
+</code></pre>
+<p>(4) <code>olist_raw.order_items</code> テーブルに対して以下のクエリを 1 つずつ実行して、データ内容と件数が取得できることを確認します。</p>
+<pre><code language="language-sql" class="language-sql">SELECT * FROM olist_raw.order_items LIMIT 5;
+
+-- カウント結果として 112650 件が表示されることを確認
+SELECT COUNT(*) FROM olist_raw.order_items;
+</code></pre>
+<p>(5) Databricks SQL ではクエリに名前を付けて保存することができます。<code>Create orders & order_items table</code> などと名前を付けて <strong>[保存]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/20f1b77cd06e3ade.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、Databricks SQL から ADLS Gen2 に接続し、前の章で配置した CSV ファイル群に対して SQL クエリを実行しました。また、ストレージ アカウントのアカウント キーを Databricks SQL で直接利用して認証を行いました。次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Databricks SQL から ADLS Gen2 への接続 #2" duration="20">
+        <p>この章では、ストレージ アカウントのアカウント キーを Azure Key Vault にシークレットとして登録します。Databricks SQL から Key Vault に登録されたシークレットをシークレット スコープを経由して参照し、ADLS Gen2 上の CSV ファイル群に対して SQL クエリを実行します。</p>
+<aside class="special"><p><strong>💡 シークレット スコープと Key Vault</strong></p>
+<p>シークレット スコープとは、Databricks 上でシークレットを管理するためのコレクション、要は入れ物のようなものです。Databricks 上でシークレットを扱うには、まずシークレット スコープを作成して、それからシークレット スコープを指定してシークレットを作成します。</p>
+<p>Azure Databricks ならではの特長として、Key Vault を参照専用のシークレット スコープとして登録できます。これにより、Key Vault の画面から登録したシークレットを Databricks ワークスペースから簡単に参照できるようになります。</p>
+<p>シークレット スコープの概要については以下ドキュメントを参照してください。<br><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/secrets/secret-scopes" target="_blank">https://learn.microsoft.com/ja-jp/azure/databricks/security/secrets/secret-scopes</a></p>
+</aside>
+<h2 is-upgraded><strong>1. Key Vault へのシークレットの登録</strong></h2>
+<p>(1) Azure ポータルにアクセスし、ワークショップで利用するリソース グループを選択します。リソース グループから自身が利用する Key Vault (日本語の場合はキー コンテナー) を選択します。</p>
+<p>(2) 左側メニューの <strong>[シークレット]</strong> を選択した後、画面上部の <strong>[+ 生成/インポート]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/eb32ccbf2e9ef5fe.jpg"></p>
+<p>(3) シークレットの作成画面で以下の項目を設定 (他の項目は変更不要) し、 <strong>[作成]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>名前</p>
+</td><td colspan="1" rowspan="1"><p>任意の名前を入力します。このワークショップでは <strong><code>secret-storage-account-key</code></strong> とします。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>シークレット値</p>
+</td><td colspan="1" rowspan="1"><p>ストレージ アカウントのアカウント キーを貼り付けます。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/ecf1759fb96aca3e.jpg"></p>
+<h2 is-upgraded><strong>2. Databricks のシークレット スコープの作成</strong></h2>
+<p>(1) Databricks のシークレット スコープの作成画面 <code>https://{my-databricks-workspace-url}#secrets/createScope</code> にアクセスします。</p>
+<ul>
+<li><code>{my-databricks-workspace-url}</code> は自身の Databricks ワークスペースの URL に置き換えてください。</li>
+<li>例: <code>https://adb-1234567890.1.azuredatabricks.net#secrets/createScope</code></li>
+</ul>
+<p>(2) Databricks のシークレット スコープの作成画面で以下の項目を設定し、 <strong>[Create]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Scope Name</p>
+</td><td colspan="1" rowspan="1"><p>任意の名前を入力します。このワークショップでは <strong><code>my-secret-scope</code></strong> とします。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Manage Principal</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Creator</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>DNS Name</p>
+</td><td colspan="1" rowspan="1"><p>Key Vault の左側メニューの <strong>[プロパティ]</strong> &gt; <strong>[コンテナーの URI]</strong> の値をコピーして貼り付けます。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Resource ID</p>
+</td><td colspan="1" rowspan="1"><p>Key Vault の左側メニューの <strong>[プロパティ]</strong> &gt; <strong>[リソース ID]</strong> の値をコピーして貼り付けます。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/1be7aca75fae798f.jpg"></p>
+<p>(3) 以下のようなダイアログが表示されたらシークレット スコープの作成は完了です。<strong>[OK]</strong> をクリックします。Web ブラウザのこのタブは閉じても構いません。</p>
+<p class="image-container"><img src="img/45596051bf5efeea.jpg"></p>
+<h2 is-upgraded><strong>3. Databricks SQL ウェアハウスの設定とクエリの実行</strong></h2>
+<p>(1) Databricks SQL にアクセスし、画面右上のユーザー名を選択し、<strong>[SQL 管理コンソール]</strong> &gt; <strong>[SQL ウェアハウスの設定]</strong> を選択します。</p>
+<p>(2) データ アクセス設定の現在の記述は削除した上で、以下のスニペットをコピー &amp; ペーストし、<code>{storage-account}</code> を以前の章で作成したストレージ アカウント名に置き換えます。画面下部の <strong>[変更を保存]</strong> をクリックします。これにより SQL ウェアハウスが再起動されます。</p>
+<pre><code>spark.hadoop.fs.azure.account.key.{storage-account}.dfs.core.windows.net &#123;&#123;secrets/my-secret-scope/secret-storage-account-key}}
+</code></pre>
+<p class="image-container"><img src="img/be338508d83b9f2.jpg"></p>
+<p>(3) SQL ウェアハウスの再起動完了後、Databricks SQL の左側メニューの <strong>[クエリ]</strong> にアクセスし、以前の章で保存したクエリを開きます。</p>
+<p class="image-container"><img src="img/6ad5c057c4147720.jpg"></p>
+<p>(4) クエリのうち適当な SELECT 文を選択して実行します。結果が返ってくれば、SQL ウェアハウスのデータ アクセス設定が正しく設定されていることが確認できます。</p>
+<p class="image-container"><img src="img/229da5f1f22ebf39.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、ストレージ アカウントのアカウント キーを Azure Key Vault にシークレットとして登録した後、Databricks SQL から Key Vault に登録されたシークレットをシークレット スコープを経由して参照し、ADLS Gen2 上の CSV ファイル群に対して SQL クエリを実行しました。次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Delta Lake 形式への変換 #1 (Orders)" duration="40">
+        <p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders の CSV ファイル (<code>olist_orders_dataset.csv</code>) を Delta Lake 形式に変換します。変換の前後で CSV 形式のデータと Delta Lake 形式のデータを Databricks SQL のクエリとデータ エクスプローラーで概観します。</p>
+<h2 is-upgraded><strong>🔎 データ変換の流れ</strong></h2>
+<p>この章で実現するデータ変換の流れは以下の通りです。</p>
+<p class="image-container"><img src="img/9a72044edb041039.jpg"></p>
+<h2 is-upgraded><strong>1. Databricks SQL による CSV データの概観</strong></h2>
+<p>(1) Databricks SQL の左側メニューの <strong>[データ]</strong> にアクセスします。データ エクスプローラーと呼ばれる画面が表示されます。<code>olist_raw</code> データベースの <code>orders</code> テーブルの <strong>[スキーマ]</strong> を選択し、列名やデータ型を確認します。<code>order_id</code> がキー項目です。</p>
+<p class="image-container"><img src="img/af185ba193ebcd7c.jpg"></p>
+<p>(2) 続けて <strong>[サンプル データ]</strong> をクリックし、データの内容を確認します。</p>
+<p class="image-container"><img src="img/3784f0076dea385e.jpg"></p>
+<h2 is-upgraded><strong>2. マッピング データ フローによる Delta Lake 形式への変換</strong></h2>
+<p>Azure Synapse Analytics のマッピング データ フローを用いて Orders の CSV ファイルを Delta Lake 形式に変換します。</p>
+<p>具体的な手順として、Synapse Studio にてデータ フローのデバッグを有効化、データ フローとパイプラインを作成、パイプラインにデータ フロー アクティビティを定義してパイプラインを実行します。</p>
+<h3 is-upgraded><strong>データ フローの完成形</strong></h3>
+<p>データ フローの完成形は以下キャプチャの通りです。ソース変換で ADLS Gen2 上の Orders の CSV ファイルを読み取り、行の変更変換を挟んで、シンク変換で ADLS Gen2 に Delta Lake 形式で出力します。</p>
+<p class="image-container"><img src="img/a84dd924e0edfbb6.jpg"></p>
+<aside class="special"><p><strong>💡 データ フローの「変換」(Transformation)</strong></p>
+<p>データ フローのキャンバス内の一つ一つのボックスを<strong>変換</strong> (Transformation) と呼びます。データ フローは 1 つ以上の<strong>ソース変換</strong>から開始してデータを読み込み、色々な変換を使ってデータを変換し、最後に 1 つ以上の<strong>シンク変換</strong>でデータを出力します。</p>
+</aside>
+<aside class="special"><p><strong>💡 シンク変換でのアップサートと行の変更変換</strong></p>
+<p>Delta Lake 形式のテーブルに対して変更を行う際、新しい行の挿入はもちろん、既存の行の更新、両者を組み合わせたアップサート、そして既存の行の削除を行うことができます。(Apache Parquet 形式の場合は新しい行の挿入のみ対応)</p>
+<p>Delta Lake テーブルに対して行う変更について、シンク変換では挿入、削除、アップサート、更新のどれに該当するかを指定できます。本ワークショップでは、データ フローを複数回実行した場合でも、キー列 (Orders の場合は <code>order_id</code>) の値が同じ行が複数回テーブルに挿入されないようにしたいため、アップサートを指定します。</p>
+<p class="image-container"><img src="img/8c83ba321d4d8f0a.jpg"></p>
+<p>シンク変換で削除、アップサート、更新にチェックすると、シンク変換の前に<strong>行の変更変換</strong>を組み込むよう求められます。行の変更変換では、シンク変換での挿入、削除、アップサート、更新の対象とする行を絞り込むための条件を記述します。実際のユースケースでは <code>Year > 2000</code> の行だけを更新対象にするといった使い方をします。</p>
+<p>具体的な設定手順については後ほど記載しますが、本ワークショップでは特定の行に絞り込まずに全行をアップサートの対象とします。</p>
+<p class="image-container"><img src="img/a96fc4a71603e355.jpg"></p>
+</aside>
+<h3 is-upgraded><strong>2-1. データ フローのデバッグの有効化</strong></h3>
+<p>まずはデバッグ用の Spark クラスターを起動します。これにより、各変換でデータがどのように変更されるかをプレビューしながら作業を行えるようになります。</p>
+<p>(1) Synapse スタジオで <strong>[Develop]</strong> ハブにアクセスした後、<strong>[+]</strong> ボタンをクリックし <strong>[データ フロー]</strong> を選択します。</p>
+<p class="image-container"><img src="img/3a72f2679616e58.jpg"></p>
+<p>(2) データ フローのプロパティで <strong>[名前]</strong> に <code>DataflowEnrichOrders</code> を入力します。作業領域を広くするため以下の画面キャプチャ内の赤枠で囲んだボタンをクリックしてプロパティを折りたたみます。</p>
+<p class="image-container"><img src="img/5e8c77b81b116e56.jpg"></p>
+<p>(3) <strong>[データ フローのデバッグ]</strong> のトグルをオンにします。</p>
+<p class="image-container"><img src="img/337a7645e30fa4bc.jpg"></p>
+<p>(4) 以下のような確認のダイアログが出ますので <strong>[OK]</strong> をクリックします。通常 5 分程度でデバッグ用のクラスターの起動が完了します。起動の完了を待たずに次のステップに進みましょう。</p>
+<p class="image-container"><img src="img/9d1c1fbba9656381.jpg"></p>
+<h3 is-upgraded><strong>2-2. データ フロー &gt; ソース変換</strong></h3>
+<p>(1) データ フローのキャンバス内の <strong>[ソースの追加]</strong> の下向き矢印をクリックし、<strong>[ソースの追加]</strong> を選択します。</p>
+<p class="image-container"><img src="img/2347641de66b641f.jpg"></p>
+<p>(2) ソース変換をクリックし、画面下部に表示された <strong>[ソースの設定]</strong> タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ソースの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>インライン</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>インライン データセットの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>DelimitedText</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リンク サービス</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>{Synapse ワークスペース名}-WorkspaceDefaultStorage</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/35dd5cc99d40b66a.jpg"></p>
+<p>(3) 続いて <strong>[ソースのオプション]</strong> タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ファイル パス</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダ名に <strong><code>raw</code></strong>、ファイル名に <strong><code>olist_orders_dataset.csv</code></strong> を入力します。(「参照」からファイルを選択する方法でも OK です)</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>先頭行をヘッダーとして</p>
+</td><td colspan="1" rowspan="1"><p>チェックします。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/241ef0b8e69b3b45.jpg"></p>
+<p>(4) 続いて <strong>[プロジェクション]</strong> タブを開き、<strong>[スキーマのインポート]</strong> をクリックします。この操作を完了するにはデータ フローのデバッグ用クラスターが起動している必要があります。</p>
+<p class="image-container"><img src="img/f84ffe528185ad22.jpg"></p>
+<p>(5) スキーマのインポート動作の画面では何も入力せずに <strong>[インポート]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/1d9f09dc37f8b351.jpg"></p>
+<p>(6) スキーマのインポートが完了するまで待機します。完了すると以下のように表示されます。</p>
+<p class="image-container"><img src="img/cfbfc0c86b10e0b5.jpg"></p>
+<p>(7) 続いて <strong>[データのプレビュー]</strong> タブを開き、<strong>[最新の情報に更新]</strong> をクリックします。完了すると以下のように表示されます。</p>
+<p class="image-container"><img src="img/2ced801220bc7f13.jpg"></p>
+<p>ソース変換の編集はこれで完了です。</p>
+<h3 is-upgraded><strong>2-3. データ フロー &gt; 行の変更変換</strong></h3>
+<p>(1) ソース変換の後ろに「行の変更」変換を追加します。</p>
+<p class="image-container"><img src="img/fd2da3e21cbd7d8b.jpg"></p>
+<p>(2) 行の変更変換をクリックし、画面下部に表示された <strong>[行の変更の設定]</strong>　タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>行の変更条件</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>次の場合にアップサートする</code></strong> を選択し、値に <strong><code>true()</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/bc7195b27b24da11.jpg"></p>
+<p>行の変更変換の編集はこれで完了です。</p>
+<h3 is-upgraded><strong>2-4. データ フロー &gt; シンク変換</strong></h3>
+<p>(1) 行の変更変換の後ろにシンク変換を追加します。</p>
+<p class="image-container"><img src="img/1d294b32479eb6d4.jpg"></p>
+<p>(2) シンク変換をクリックし、画面下部に表示された <strong>[シンク]</strong>　タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>シンクの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>インライン</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>インライン データセットの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Delta</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リンク サービス</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>{Synapse ワークスペース名}-WorkspaceDefaultStorage</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/943a034291cf8f2c.jpg"></p>
+<p>(3) 続いて <strong>[設定]</strong> タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/orders/</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>更新方法</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>アップサートを許可</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>キー列</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>order_id</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>デルタ オプション &gt; 自動圧縮</p>
+</td><td colspan="1" rowspan="1"><p>チェックします。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>デルタ オプション &gt; 書き込みの最適化</p>
+</td><td colspan="1" rowspan="1"><p>チェックします。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/87fd231ab8706fbd.jpg"></p>
+<p>シンク変換およびデータ フローの編集はこれで完了です。発行を行っておきましょう。</p>
+<h3 is-upgraded><strong>2-5. パイプラインの作成と実行</strong></h3>
+<p>最後にデータ フロー アクティビティを含むパイプラインを作成した後、パイプラインを実行します。</p>
+<p>(1) Synapse スタジオで <strong>[Integrate]</strong> ハブにアクセスした後、<strong>[+]</strong> ボタンをクリックし、<strong>[パイプライン]</strong> を選択します。</p>
+<p class="image-container"><img src="img/c0b564d046dfc82f.jpg"></p>
+<p>(2) パイプラインのプロパティで <strong>[名前]</strong> に <code>PipelineEnrichOrders</code> を入力します。作業領域を広くするため以下の画面キャプチャ内の赤枠で囲んだボタンをクリックしてプロパティを折りたたみます。</p>
+<p class="image-container"><img src="img/289e886fb5c470a6.jpg"></p>
+<p>(3) パイプラインのアクティビティ一覧の <strong>[移動と変換]</strong> セクションを展開し <strong>[データ フロー]</strong> を右側のキャンバスにドラッグ &amp; ドロップします。</p>
+<p class="image-container"><img src="img/9230bdf5eabb3f14.jpg"></p>
+<p>(4) キャンバス上のデータ フロー アクティビティを選択し、<strong>[設定]</strong> タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>データ フロー</p>
+</td><td colspan="1" rowspan="1"><p>先ほど作成した <strong><code>DataflowEnrichOrders</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/abb604b4852d4063.jpg"></p>
+<p>(5) 以上でパイプラインの作成は完了です。画面上部の <strong>[デバッグ]</strong> をクリックします。パイプラインが実行されますので、リフレッシュ ボタンを定期的にクリックして表示を更新し、状態が <code>成功</code> になるまで待ちます。</p>
+<p>(6) 状態が <code>成功</code> になったらパイプラインの実行結果を確認します。以下の画面キャプチャ内の赤枠で囲んだアイコン (マウスを近づけると表示されます) をクリックします。</p>
+<p class="image-container"><img src="img/19f9edf0cd788539.jpg"></p>
+<p>(7) パイプラインの実行結果が表示されます。書き込まれた行数が以下キャプチャの内容と一致することを確認します。</p>
+<p class="image-container"><img src="img/70665530be699699.jpg"></p>
+<p>(8) Synapse スタジオの <strong>[Data]</strong> ハブを開き、以下キャプチャの通り、ADLS Gen2 に <code>_delta_log</code> フォルダと Parquet ファイルが作成されていることを確認します。</p>
+<p class="image-container"><img src="img/e89b0e6a2e073ea5.jpg"></p>
+<p>パイプラインの編集はこれで完了です。発行を行っておきましょう。</p>
+<h2 is-upgraded><strong>3. Databricks SQL による Delta Lake データの概観</strong></h2>
+<p>(1) Databricks SQL の左側メニューの <strong>[SQL エディタ]</strong> にアクセスします。以下のクエリをコピー &amp; ペーストして LOCATION 句の <code>{storage-account-name}</code> を書き換え、<strong>[すべてを実行]</strong> を選択します。これらのクエリにより、<code>olist_enriched</code> データベースおよび <code>orders</code> テーブルが作成されます。</p>
+<pre><code language="language-sql" class="language-sql">CREATE DATABASE IF NOT EXISTS olist_enriched;
+
+CREATE TABLE IF NOT EXISTS olist_enriched.orders
+LOCATION &#39;abfss://olist-brazilian-ecommerce@{storage-account-name}.dfs.core.windows.net/enriched/orders/&#39;;
+</code></pre>
+<p>(2) スキーマ ブラウザーに作成したデータベースとテーブルが表示されることを確認します。(データベース名が表示されない場合はリフレッシュ ボタンを選択して表示を更新します)</p>
+<p>(3) <code>olist_enriched.orders</code> テーブルに対して以下のクエリを 1 つずつ実行して、データ内容と件数が取得できることを確認します。</p>
+<pre><code language="language-sql" class="language-sql">-- カウント結果として 99441 件が表示されることを確認
+SELECT COUNT(*) FROM olist_enriched.orders;
+
+SELECT * FROM olist_enriched.orders;
+</code></pre>
+<p class="image-container"><img src="img/755fe7e34380a3e6.jpg"></p>
+<p>(5) クエリについて <code>Create enriched orders table</code> などと名前を付けて <strong>[保存]</strong> を選択します。</p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders の CSV ファイル (<code>olist_orders_dataset.csv</code>) を Delta Lake 形式に変換しました。変換の前後で CSV 形式のデータと Delta Lake 形式のデータを Databricks SQL のクエリとデータ エクスプローラーで概観しました。次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Delta Lake 形式への変換 #2 (Order Items)" duration="20">
+        <p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders Items の CSV ファイル (<code>olist_order_items_dataset.csv</code>) を Delta Lake 形式に変換します。変換の前後で CSV 形式のデータと Delta Lake 形式のデータを Databricks SQL のクエリとデータ エクスプローラーで概観します。</p>
+<h2 is-upgraded><strong>🔎 データ変換の流れ</strong></h2>
+<p>この章で実現するデータ変換の流れは以下の通りです。</p>
+<p class="image-container"><img src="img/db8c5938f3754123.jpg"></p>
+<h2 is-upgraded><strong>1. Databricks SQL による CSV データの概観</strong></h2>
+<p>(1) Databricks SQL の左側メニューの <strong>[データ]</strong> にアクセスします。データ エクスプローラーで <code>olist_raw</code> データベースの <code>order_items</code> テーブルの <strong>[スキーマ]</strong> を選択し、列名やデータ型を確認します。<code>order_id</code> と <code>order_item_id</code> がキー項目です。</p>
+<p class="image-container"><img src="img/99d2a727839c5268.jpg"></p>
+<p>(2) 続けて <strong>[サンプル データ]</strong> をクリックし、データの内容を確認します。</p>
+<p class="image-container"><img src="img/77cd5e9f24ae8ed1.jpg"></p>
+<h2 is-upgraded><strong>2. マッピング データ フローによる Delta Lake 形式への変換</strong></h2>
+<p>Azure Synapse Analytics のマッピング データ フローを用いて Order Items の CSV ファイルを Delta Lake 形式に変換します。</p>
+<p>具体的な手順として、前の章で作成した Orders のデータ フローを複製して編集、パイプラインを作成、パイプラインにデータ フロー アクティビティを定義してパイプラインを実行します。</p>
+<h3 is-upgraded><strong>データ フローの完成形</strong></h3>
+<p>データ フローの完成形は以下キャプチャの通りです。前章の Orders と同じ変換を利用します。</p>
+<p class="image-container"><img src="img/94ab82d5fcb84556.jpg"></p>
+<h3 is-upgraded><strong>2-1. データ フローの複製</strong></h3>
+<p>(1) Synapse スタジオで <strong>[Develop]</strong> ハブにアクセスした後、前章で作成したデータ フロー <code>DataflowEnrichOrders</code> を右クリックし <strong>[複製]</strong> を選択します。</p>
+<p class="image-container"><img src="img/69a2debb41095125.jpg"></p>
+<p>(2) データ フローのプロパティで <strong>[名前]</strong> に <code>DataflowEnrichOrderItems</code> を入力します。作業領域を広くするため以下の画面キャプチャ内の赤枠で囲んだボタンをクリックしてプロパティを折りたたみます。</p>
+<p class="image-container"><img src="img/a6ef324ba0c588f4.jpg"></p>
+<h3 is-upgraded><strong>2-2. データ フロー &gt; ソース変換</strong></h3>
+<p>(1) ソース変換をクリックし、<strong>[ソースのオプション]</strong> タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ファイル パス</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>raw</code></strong>、ファイル名に <strong><code>olist_order_items_dataset.csv</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/23a0a536710a8e5b.jpg"></p>
+<p>(2) 続いて <strong>[プロジェクション]</strong> タブを開き、<strong>[スキーマをクリア]</strong> をクリックします。その後、<strong>[スキーマのインポート]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/1d79e3d025e092b6.jpg"></p>
+<p>(3) スキーマのインポート動作の画面では何も入力せずに <strong>[インポート]</strong> をクリックし、スキーマのインポートが完了するまで待機します。</p>
+<p>(4) 続いて <strong>[データのプレビュー]</strong> タブを開き、<strong>[最新の情報に更新]</strong> をクリックします。完了すると以下のように表示されます。</p>
+<p class="image-container"><img src="img/99e7ba7bc8fb18a0.jpg"></p>
+<p>ソース変換の編集はこれで完了です。</p>
+<h3 is-upgraded><strong>2-3. データ フロー &gt; 行の変更変換</strong></h3>
+<p>行の変更変換は編集不要です。</p>
+<h3 is-upgraded><strong>2-4. データ フロー &gt; シンク変換</strong></h3>
+<p>(1) シンク変換をクリックし、<strong>[設定]</strong> タブを開き、以下の項目を設定します。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/order_items/</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>キー列</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>order_id</code></strong> と <strong><code>order_item_id</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/bd693941653952a.jpg"></p>
+<p>シンク変換およびデータ フローの編集はこれで完了です。発行を行っておきましょう。</p>
+<h3 is-upgraded><strong>2-5. パイプラインの作成と実行</strong></h3>
+<p>最後にデータ フロー アクティビティを含むパイプラインを作成した後、パイプラインを実行します。</p>
+<ol type="1">
+<li>Synapse スタジオで <strong>[Integrate]</strong> ハブにアクセスした後、<strong>[+]</strong> ボタンをクリックし、<strong>[パイプライン]</strong> を選択します。</li>
+<li>パイプラインのプロパティで <strong>[名前]</strong> に <code>PipelineEnrichOrderItems</code> を入力します。</li>
+<li>パイプラインのアクティビティ一覧の <strong>[移動と変換]</strong> セクションを展開し <strong>[データ フロー]</strong> を右側のキャンバスにドラッグ &amp; ドロップします。</li>
+<li>キャンバス上のデータ フロー アクティビティを選択し、<strong>[設定]</strong> タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>データ フロー</p>
+</td><td colspan="1" rowspan="1"><p>先ほど作成した <strong><code>DataflowEnrichOrderItems</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/a9dea809b92907b8.jpg"></p>
+<ol type="1" start="5">
+<li>以上でパイプラインの作成は完了です。画面上部の <strong>[デバッグ]</strong> をクリックします。パイプラインが実行されますので、リフレッシュ ボタンを定期的にクリックして表示を更新し、状態が <code>成功</code> になるまで待ちます。</li>
+<li>状態が <code>成功</code> になったらパイプラインの実行結果を確認します。書き込まれた行数が以下キャプチャの内容と一致することを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/32fcc0d6cc198e62.jpg"></p>
+<ol type="1" start="7">
+<li>Synapse スタジオの <strong>[Data]</strong> ハブを開き、以下キャプチャの通り、ADLS Gen2 に <code>_delta_log</code> フォルダと Parquet ファイルが作成されていることを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/58de3903968ef11d.jpg"></p>
+<p>パイプラインの編集はこれで完了です。発行を行っておきましょう。</p>
+<h2 is-upgraded><strong>3. Databricks SQL による Delta Lake データの概観</strong></h2>
+<p>(1) Databricks SQL の左側メニューの <strong>[SQL エディタ]</strong> にアクセスします。以下のクエリをコピー &amp; ペーストして LOCATION 句の <code>{storage-account-name}</code> を書き換え、<strong>[すべてを実行]</strong> をクリックします。これらのクエリにより、<code>olist_enriched</code> データベースおよび <code>order_items</code> テーブルが作成されます。</p>
+<pre><code language="language-sql" class="language-sql">CREATE DATABASE IF NOT EXISTS olist_enriched;
+
+CREATE TABLE IF NOT EXISTS olist_enriched.order_items
+LOCATION &#39;abfss://olist-brazilian-ecommerce@{storage-account-name}.dfs.core.windows.net/enriched/order_items/&#39;;
+</code></pre>
+<p>(2) スキーマ ブラウザーに作成したデータベースとテーブルが表示されることを確認します。(データベース名が表示されない場合はリフレッシュ ボタンをクリックして表示を更新します)</p>
+<p>(3) <code>olist_enriched.order_items</code> テーブルに対して以下のクエリを 1 つずつ実行して、データ内容と件数が取得できることを確認します。</p>
+<pre><code language="language-sql" class="language-sql">-- カウント結果として 112650 件が表示されることを確認
+SELECT COUNT(*) FROM olist_enriched.order_items;
+
+SELECT * FROM olist_enriched.order_items;
+</code></pre>
+<p class="image-container"><img src="img/a18b5485bef18d91.jpg"></p>
+<p>(4) クエリについて <code>Create enriched order_items table</code> などと名前を付けて <strong>[保存]</strong> を選択します。</p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders Items の CSV ファイル (<code>olist_order_items_dataset.csv</code>) を Delta Lake 形式に変換しました。変換の前後で CSV 形式のデータと Delta Lake 形式のデータを Databricks SQL のクエリとデータ エクスプローラーで概観しました。</p>
+<p>休憩をあまり取らずに進めている場合はこの辺りで少し休憩してから、次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="日別の注文金額の集計処理" duration="30">
+        <p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders と Order Items の Delta Lake 形式のデータを元に日別の注文金額の集計を行い、Delta Lake 形式で出力します。その後、Databricks SQL のクエリとデータ エクスプローラーで結果を概観します。</p>
+<h2 is-upgraded><strong>🔎 データ変換の流れ</strong></h2>
+<p>この章で実現するデータ変換の流れは以下の通りです。</p>
+<p class="image-container"><img src="img/4d5b65b3eff973c3.jpg"></p>
+<h2 is-upgraded><strong>1. マッピング データ フローによる集計処理</strong></h2>
+<p>具体的な手順として、Synapse Studio にてデータ フローとパイプラインを作成、パイプラインにデータ フロー アクティビティを定義してパイプラインを実行します。</p>
+<h3 is-upgraded><strong>データ フローの完成形</strong></h3>
+<p>データ フローの完成形は以下キャプチャの通りです。一つ目のソース変換で ADLS Gen2 上の Orders の Delta Lake のデータを読み取り、二つ目のソース変換で ADLS Gen2 上の Order Items の Delta Lake のデータを読み取ります。結合変換で Orders と Order Items を結合、集計変換で購入日 (<code>order_purchase_date</code>) ごとの金額を集計し、行の変更変換を挟んでシンク変換で ADLS Gen2 に Delta Lake 形式で出力します。</p>
+<p class="image-container"><img src="img/782540b4cd4930fd.jpg"></p>
+<h3 is-upgraded><strong>1-1. データ フローの作成</strong></h3>
+<ol type="1">
+<li>Synapse スタジオで <strong>[Develop]</strong> ハブにアクセスした後、<strong>[+]</strong> ボタンをクリックし <strong>[データ フロー]</strong> を選択します。</li>
+<li>データ フローのプロパティで <strong>[名前]</strong> に <code>DataflowCurateDailyOrderAmounts</code> を入力します。</li>
+</ol>
+<h3 is-upgraded><strong>1-2. データ フロー &gt; ソース変換 (Orders)</strong></h3>
+<ol type="1">
+<li>データ フローのキャンバス内の <strong>[ソースの追加]</strong> の下向き矢印をクリックし、<strong>[ソースの追加]</strong> を選択します。</li>
+<li>ソース変換をクリックし、画面下部に表示された <strong>[ソースの設定]</strong> タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>出力ストリーム名</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>orders</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ソースの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>インライン</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>インライン データセットの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Delta</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リンク サービス</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>{Synapse ワークスペース名}-WorkspaceDefaultStorage</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/b0c4e5abed999d7e.jpg"></p>
+<ol type="1" start="3">
+<li>続いて <strong>[ソースのオプション]</strong> タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/orders</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/270627059fd8c3b4.jpg"></p>
+<ol type="1" start="4">
+<li>続いて <strong>[プロジェクション]</strong> タブを開き、<strong>[スキーマのインポート]</strong> をクリックします。スキーマのインポート動作の画面では何も入力せずに <strong>[インポート]</strong> をクリックし、スキーマのインポートが完了するまで待機します。</li>
+<li>続いて <strong>[データのプレビュー]</strong> タブを開き、<strong>[最新の情報に更新]</strong> をクリックします。データが表示されることを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/37e9d6c82be2c1fd.jpg"></p>
+<h3 is-upgraded><strong>1-3. データ フロー &gt; ソース変換 (Order Items)</strong></h3>
+<ol type="1">
+<li>データ フローのキャンバス内で Orders 用ソース変換の下に表示されている <strong>[ソースの追加]</strong> の下向き矢印をクリックし、<strong>[ソースの追加]</strong> を選択します。</li>
+</ol>
+<p class="image-container"><img src="img/b774ae2cc1ef17bf.jpg"></p>
+<ol type="1" start="2">
+<li>ソース変換をクリックし、画面下部に表示された <strong>[ソースの設定]</strong> タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>出力ストリーム名</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>orderItems</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ソースの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>インライン</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>インライン データセットの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Delta</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リンク サービス</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>{Synapse ワークスペース名}-WorkspaceDefaultStorage</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<ol type="1" start="3">
+<li>続いて <strong>[ソースのオプション]</strong> タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/order_items</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<ol type="1" start="4">
+<li>続いて <strong>[プロジェクション]</strong> タブを開き、<strong>[スキーマのインポート]</strong> をクリックします。スキーマのインポート動作の画面では何も入力せずに <strong>[インポート]</strong> をクリックし、スキーマのインポートが完了するまで待機します。</li>
+<li>続いて <strong>[データのプレビュー]</strong> タブを開き、<strong>[最新の情報に更新]</strong> をクリックします。データが表示されることを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/5a18b78902478d39.jpg"></p>
+<h3 is-upgraded><strong>1-4. データ フロー &gt; 結合変換</strong></h3>
+<ol type="1">
+<li>Orders 用のソース変換の後ろに「結合」変換を追加します。</li>
+</ol>
+<p class="image-container"><img src="img/c965ce040dc85b76.jpg"></p>
+<ol type="1" start="2">
+<li>結合変換をクリックし、画面下部に表示された <strong>[結合の設定]</strong>　タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>左ストリーム</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>orders</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>右ストリーム</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>orderItems</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>結合の種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>内部</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>結合条件 &gt; 左: orders の列</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>order_id</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>結合条件 &gt; 右: orderItems の列</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>order_id</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/5383afa87fca5914.jpg"></p>
+<ol type="1" start="3">
+<li>続いて <strong>[データのプレビュー]</strong> タブを開き、<strong>[最新の情報に更新]</strong> をクリックします。データが表示されることを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/85f441c0a3fbfb11.jpg"></p>
+<h3 is-upgraded><strong>1-5. データ フロー &gt; 集約変換</strong></h3>
+<ol type="1">
+<li>結合変換の後ろに「集約」変換を追加します。</li>
+</ol>
+<p class="image-container"><img src="img/d01db1538be295eb.jpg"></p>
+<ol type="1" start="2">
+<li>集約変換をクリックし、画面下部に表示された <strong>[集計の設定]</strong>　タブを開き、<strong>[列の選択]</strong> の下の <strong>[式ビルダ―を開く]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/12c43deb54110f78.jpg"></p>
+<ol type="1" start="3">
+<li>データフロー式ビルダー画面で以下の項目を設定し、<strong>[保存して終了]</strong> をクリックします。(この操作により <code>order_purchase_timestamp</code> 列から <code>order_purchase_date</code> という Date 型の列が生成されます)</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>列名</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>order_purchase_date</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>式</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>toDate(order_purchase_timestamp)</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/23f8b235c7e91072.jpg"></p>
+<ol type="1" start="4">
+<li><strong>[集計の設定]</strong> 画面に戻るので、<strong>[集約]</strong> を選択し、以下の項目を設定します。(この操作により <code>price</code> (料金) と <code>freight_value</code> (送料) を足し合わせた <code>sales_amount</code> という Double 型の列が生成されます)</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>列</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>sales_amount</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>式</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>sum(price + freight_value)</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/a2947c125f9b74aa.jpg"></p>
+<ol type="1" start="5">
+<li>続いて <strong>[データのプレビュー]</strong> タブを開き、<strong>[最新の情報に更新]</strong> をクリックします。データが表示されることを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/16be45e4776250ee.jpg"></p>
+<h3 is-upgraded><strong>1-6. データ フロー &gt; 行の変更変換</strong></h3>
+<ol type="1">
+<li>集約変換の後ろに行の変更変換を追加します。</li>
+<li>行の変更変換をクリックし、画面下部に表示された <strong>[行の変更の設定]</strong>　タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>行の変更条件</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>次の場合にアップサートする</code></strong> を選択し、値に <strong><code>true()</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<h3 is-upgraded><strong>1-7. データ フロー &gt; シンク変換</strong></h3>
+<ol type="1">
+<li>行の変更変換の後ろにシンク変換を追加します。</li>
+<li>シンク変換をクリックし、画面下部に表示された <strong>[シンク]</strong>　タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>シンクの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>インライン</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>インライン データセットの種類</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Delta</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>リンク サービス</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>{Synapse ワークスペース名}-WorkspaceDefaultStorage</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<ol type="1" start="3">
+<li>続いて <strong>[設定]</strong> タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>curated/daily_order_amounts/</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>更新方法</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>アップサートを許可</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>キー列</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>order_purchase_date</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>デルタ オプション &gt; 自動圧縮</p>
+</td><td colspan="1" rowspan="1"><p>チェックします。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>デルタ オプション &gt; 書き込みの最適化</p>
+</td><td colspan="1" rowspan="1"><p>チェックします。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/21c62d2e41490977.jpg"></p>
+<p>データ フローの編集はこれで完了です。発行を行っておきましょう。</p>
+<h3 is-upgraded><strong>1-8. パイプラインの作成と実行</strong></h3>
+<ol type="1">
+<li>Synapse スタジオで <strong>[Integrate]</strong> ハブにアクセスした後、<strong>[+]</strong> ボタンをクリックし、<strong>[パイプライン]</strong> を選択します。</li>
+<li>パイプラインのプロパティで <strong>[名前]</strong> に <code>PipelineCurateDailyOrderAmounts</code> を入力します。</li>
+<li>パイプラインのアクティビティ一覧の <strong>[移動と変換]</strong> セクションを展開し <strong>[データ フロー]</strong> を右側のキャンバスにドラッグ &amp; ドロップします。</li>
+<li>キャンバス上のデータ フロー アクティビティを選択し、<strong>[設定]</strong> タブを開き、以下の項目を設定します。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>データ フロー</p>
+</td><td colspan="1" rowspan="1"><p>先ほど作成した <strong><code>DataflowCurateDailyOrderAmounts</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/56776193a230f76a.jpg"></p>
+<ol type="1" start="5">
+<li>以上でパイプラインの作成は完了です。画面上部の <strong>[デバッグ]</strong> をクリックします。パイプラインが実行されますので、リフレッシュ ボタンを定期的にクリックして表示を更新し、状態が <code>成功</code> になるまで待ちます。</li>
+<li>状態が <code>成功</code> になったらパイプラインの実行結果を確認します。書き込まれた行数が以下キャプチャの内容と一致することを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/3386baf085a31e32.jpg"></p>
+<ol type="1" start="7">
+<li>Synapse スタジオの <strong>[Data]</strong> ハブを開き、以下キャプチャの通り、ADLS Gen2 に <code>_delta_log</code> フォルダと Parquet ファイルが作成されていることを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/738fd1df554eaa90.jpg"></p>
+<p>パイプラインの編集はこれで完了です。発行を行っておきましょう。</p>
+<h2 is-upgraded><strong>2. Databricks SQL による Delta Lake データの概観</strong></h2>
+<ol type="1">
+<li>Databricks SQL の左側メニューの <strong>[SQL エディタ]</strong> にアクセスします。以下のクエリをコピー &amp; ペーストして LOCATION 句の <code>{storage-account-name}</code> を書き換え、<strong>[すべてを実行]</strong> をクリックします。これらのクエリにより、<code>olist_curated</code> データベースおよび <code>daily_order_amounts</code> テーブルが作成されます。</li>
+</ol>
+<pre><code language="language-sql" class="language-sql">CREATE DATABASE IF NOT EXISTS olist_curated;
+
+CREATE TABLE IF NOT EXISTS olist_curated.daily_order_amounts
+LOCATION &#39;abfss://olist-brazilian-ecommerce@{storage-account-name}.dfs.core.windows.net/curated/daily_order_amounts/&#39;;
+</code></pre>
+<ol type="1" start="2">
+<li>スキーマ ブラウザーに作成したデータベースとテーブルが表示されることを確認します。(データベース名が表示されない場合はリフレッシュ ボタンをクリックして表示を更新します)</li>
+<li><code>olist_curated.daily_order_amounts</code> テーブルに対して以下のクエリを 1 つずつ実行して、データ内容と件数が取得できることを確認します。</li>
+</ol>
+<pre><code language="language-sql" class="language-sql">-- カウント結果として 616 件が表示されることを確認
+SELECT COUNT(*) FROM olist_curated.daily_order_amounts;
+
+SELECT * FROM olist_curated.daily_order_amounts ORDER BY order_purchase_date;
+</code></pre>
+<p class="image-container"><img src="img/23042aecd8fb97b.jpg"></p>
+<ol type="1" start="4">
+<li>クエリについて <code>Create daily_order_amounts table</code> などと名前を付けて <strong>[保存]</strong> を選択します。</li>
+</ol>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders と Order Items の Delta Lake 形式のデータを元に日別の注文金額の集計を行い、Delta Lake 形式で出力しました。その後、Databricks SQL のクエリとデータ エクスプローラーで結果を概観しました。次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Databricks SQL のダッシュボードによる可視化" duration="40">
+        <p>この章では、前章で作成した日別の注文金額の集計結果 (Daily Order Amounts) について、Databricks SQL のダッシュボードで可視化します。</p>
+<h2 is-upgraded><strong>ダッシュボードの完成形</strong></h2>
+<p>ダッシュボードの完成形は以下キャプチャの通りです。このダッシュボードは、日別の注文金額に関する 3 つのビジュアライゼーションと、日付範囲を絞り込むための 1 つのウィジェットを備えています。</p>
+<p class="image-container"><img src="img/d1dd749aa6c42b45.jpg"></p>
+<aside class="special"><p><strong>💡 クエリとビジュアライゼーションとダッシュボード</strong></p>
+<p>Databricks SQL のダッシュボードの作成は以下の流れで進めます。</p>
+<ol type="1">
+<li>クエリの作成と実行</li>
+<li>クエリの実行結果からビジュアライゼーションを作成</li>
+<li>ビジュアライゼーションをダッシュボードに表示</li>
+</ol>
+<p>ビジュアライゼーションは Databricks SQL の日本語ドキュメントだと視覚化や可視化と表示されることがありますが、本ワークショップではビジュアライゼーションと呼称します。</p>
+<p>本ワークショップでは数を数える<strong>カウンター</strong>や時系列の数の推移を表現する<strong>折れ線グラフ</strong>などのシンプルなビジュアライゼーションを利用しますが、他にも様々なビジュアライゼーションがサポートされています。</p>
+<p>詳細は <a href="https://learn.microsoft.com/ja-jp/azure/databricks/sql/user/visualizations/visualization-types" target="_blank">視覚化の種類 - Azure Databricks - Databricks SQL | Microsoft Learn</a> をご覧ください。</p>
+</aside>
+<h2 is-upgraded><strong>1. ダッシュボードの作成</strong></h2>
+<p>(1) Databricks SQL の左側メニューの <strong>[ダッシュボード]</strong> にアクセスし、<strong>[ダッシュボードを作成]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/e257bd802b105ed6.jpg"></p>
+<p>(2) 新規ダッシュボードのダイアログで <code>Daily Order Amounts Dashboard</code> と入力し <strong>[保存]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/aacf97cbe7b8a214.jpg"></p>
+<p>(3) 空のダッシュボードが作成されます。ダッシュボードの表示を更新する際に利用する SQL ウェアハウスとして <code>Starter Warehouse</code> を選択し <strong>[編集完了]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/c78ab7dd118d7f33.jpg"></p>
+<h2 is-upgraded><strong>2. クエリとビジュアライゼーションの作成 (カウンター)</strong></h2>
+<p>(1) Databricks SQL の左側メニューの <strong>[SQL エディタ]</strong> にアクセスし、<strong>[新規クエリを作成する]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/c6815460495da4a3.jpg"></p>
+<p>(2) クエリ名を <code>Daily Order Amounts - Total</code> に変更します。クエリ エディタに以下のスニペットを貼り付けます。画面下部に <code>Date Range</code> というクエリ パラメーターのウィジェットが表示されるのでキャプチャ赤枠で囲んだ歯車アイコンをクリックします。</p>
+<pre><code language="language-sql" class="language-sql">SELECT
+  sum(sales_amount) AS total_sales_amount
+FROM
+  olist_curated.daily_order_amounts
+WHERE
+  order_purchase_date &gt;= &#39;&#123;&#123; Date Range.start }}&#39;
+  AND order_purchase_date &lt; &#39;&#123;&#123; Date Range.end}}&#39;;
+</code></pre>
+<p class="image-container"><img src="img/a622b8f51a3a809e.jpg"></p>
+<aside class="special"><p><strong>💡 Databricks SQL のクエリ パラメーター</strong></p>
+<p>クエリ パラメーターを使用すると、実行時に値をクエリに代入することができます。二重中かっこ <code>&#123;&#123; }}</code> の間の文字列はクエリ パラメーターとして扱われます。パラメーター値を設定した結果ウィンドウの上にウィジェットが表示されます。</p>
+<p>パラメーターにはデータ型を設定することができます。既定はテキストです。</p>
+<p>詳細は <a href="https://learn.microsoft.com/ja-jp/azure/databricks/sql/user/queries/query-parameters" target="_blank">クエリ パラメーター - Azure Databricks - Databricks SQL | Microsoft Learn</a> をご覧ください。</p>
+</aside>
+<p>(3) クエリ パラメーターのウィジェットの編集画面で <strong>[Type]</strong> を <code>日付範囲</code> に変更し <strong>[OK]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/74ca309115389d3c.jpg"></p>
+<p>(4) これでクエリ パラメーターのウィジェットが日付範囲に変更されました。日付範囲の左側 (<code>start</code>) を <code>2016-01-01</code>、右側 (<code>end</code>) を <code>2019-01-01</code> にして <strong>[変更を適用]</strong> をクリックします。結果が更新されたことを確認します。</p>
+<p class="image-container"><img src="img/50e0b8819c5a41e0.jpg"></p>
+<p>(5) 画面下の <code>Results</code> の右横の <strong>[+]</strong> &gt; <strong>[可視化]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/bd9dfdd179bdbdd8.jpg"></p>
+<p>(6) ビジュアライゼーションの編集画面で以下の項目を設定し <strong>[保存]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>(画面左上のビジュアライゼーション名)</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Counter</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Visualization type</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Counter</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Value column</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>total_sales_amount</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/3974e04c9df465a7.jpg"></p>
+<p>(7) 画面下の <code>Counter</code> の右横の <strong>[+]</strong> &gt; <strong>[ダッシュボードに追加]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/c5f40cf855dbfca9.jpg"></p>
+<p>(8) 追加先のダッシュボードとして <code>Daily Order Amounts Dashboard</code> を選択し <strong>[追加]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/eb24077e23587d42.jpg"></p>
+<p>(9) Databricks SQL の左側メニューの <strong>[ダッシュボード]</strong> &gt;  <code>Daily Order Amounts Dashboard</code> にアクセスし、<code>Daily Order Amounts - Total</code> のビジュアライゼーションが追加されたことを確認します。</p>
+<p class="image-container"><img src="img/2d81b4f9cfaf6bde.jpg"></p>
+<h2 is-upgraded><strong>3. クエリとビジュアライゼーションの作成 (折れ線グラフとテーブル)</strong></h2>
+<p>(1) Databricks SQL の <strong>[SQL エディタ]</strong> で新規クエリを作成します。前のセクションと同じ要領でクエリの編集を行います。</p>
+<ul>
+<li>クエリ名を <code>Daily Order Amounts</code> に変更します</li>
+<li>クエリ エディタに以下のスニペットを貼り付けます</li>
+<li>画面下部に <code>Date Range</code> というクエリ パラメーターのウィジェットが表示されるので歯車アイコンをクリックします</li>
+<li>クエリ パラメーターのウィジェットの編集画面で <strong>[Type]</strong> を <code>日付範囲</code> に変更し <strong>[OK]</strong> をクリックします</li>
+<li>日付範囲の左側 (<code>start</code>) を <code>2016-01-01</code>、右側 (<code>end</code>) を <code>2019-01-01</code> にして <strong>[変更を適用]</strong> をクリックし、結果が更新されたことを確認します</li>
+</ul>
+<p class="image-container"><img src="img/ced8d858f9ffad75.jpg"></p>
+<p>(2) 画面下の <code>Results</code> の右横の <strong>[+]</strong> &gt; <strong>[可視化]</strong> をクリックします。ビジュアライゼーションの編集画面で以下の項目を設定し <strong>[保存]</strong> をクリックします。</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>(画面左上のビジュアライゼーション名)</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Line</code></strong> を入力します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Visualization type</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Line</code></strong> を選択します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/c1d64b6005c79b50.jpg"></p>
+<p>(3) 画面下の <code>Line</code> の右横の <strong>[+]</strong> &gt; <strong>[ダッシュボードに追加]</strong> をクリックし、追加先のダッシュボードとして <code>Daily Order Amounts Dashboard</code> を選択します。</p>
+<p class="image-container"><img src="img/ea303f4637f03f30.jpg"></p>
+<p>(4) ダッシュボード <code>Daily Order Amounts Dashboard</code> にアクセスし、折れ線グラフが追加されたことを確認します。</p>
+<p class="image-container"><img src="img/3c8b4ed4ad81a3b9.jpg"></p>
+<p>(5) クエリ <code>Daily Order Amounts</code> の画面下の <code>Results</code> の右横の <strong>[+]</strong> &gt; <strong>[ダッシュボードに追加]</strong> を選択し、追加先のダッシュボードとして <code>Daily Order Amounts Dashboard</code> を選択します。</p>
+<p class="image-container"><img src="img/43b7b6b33a3d159e.jpg"></p>
+<p>(6) ダッシュボード <code>Daily Order Amounts Dashboard</code> にアクセスし、表が追加されたことを確認します。画面右上の三点をクリックし <strong>[編集]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/4dfe7a1b1a4cf090.jpg"></p>
+<p>(7) 表 (<code>Results</code>) のビジュアライゼーションの右上の三点をクリックし <strong>[ウィジェット設定を変更]</strong> を選択します。</p>
+<p class="image-container"><img src="img/810d7138f07e1a99.jpg"></p>
+<p>(8) ウィジェット設定画面で <strong>[パネルの高さを動的に調整]</strong> にチェックし <strong>[Save]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/9e5de1df02abd3d2.jpg"></p>
+<p>(9) ビジュアライゼーションの配置と大きさを以下キャプチャのように変更します。左上の日付範囲のウィジェットの左側 (<code>start</code>) を <code>2018-01-01</code>、右側 (<code>end</code>) を <code>2019-01-01</code> にして <strong>[変更を適用]</strong> をクリックし、結果が更新されることを確認します。</p>
+<p class="image-container"><img src="img/3d5c3ca3386f88f1.jpg"></p>
+<p>(10) <strong>[編集完了]</strong> をクリックします。</p>
+<p class="image-container"><img src="img/391ce12bc5929a82.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、前章で作成した日別の注文金額の集計結果 (Daily Order Amounts) について、Databricks SQL のダッシュボードで可視化しました。次の章に進みましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Power BI Desktop による可視化" duration="30">
+        <p>この章では、前章で作成した日別の注文金額の集計結果 (Daily Order Amounts) について、Power BI Desktop のレポートで可視化します。</p>
+<aside class="warning"><p><strong>⚡ Power BI Desktop の対応 OS</strong></p>
+<p>この章を実行するには Power BI Desktop が手元の PC にインストールされている必要があります。Power BI Desktop は現状 Windows でのみ利用可能です。macOS などをお使いの場合はこの章はスキップしてください。</p>
+<p>Power BI Desktop は <a href="https://powerbi.microsoft.com/ja-jp/downloads/" target="_blank">Microsoft Power BI のダウンロード</a> から入手できます。</p>
+</aside>
+<h2 is-upgraded><strong>レポートの完成形</strong></h2>
+<p>レポートの完成形は以下キャプチャの通りです。前章の Databrcisk SQL のダッシュボードとほとんど同じレイアウトのレポートを作成します。</p>
+<p class="image-container"><img src="img/1e3f0317b8d25bcd.jpg"></p>
+<h2 is-upgraded><strong>1. Power BI Desktop から Databricks SQL ウェアハウスへの接続</strong></h2>
+<p>Databricks SQL の画面から SQL ウェアハウスへの接続情報のみが定義された Power BI レポート用のファイル (拡張子 <code>pbids</code>) を数クリックでダウンロードできます。この PBIDS ファイルを使って SQL ウェアハウスに接続していきます。</p>
+<ol type="1">
+<li>Databricks SQL の <strong>[SQL ウェアハウス]</strong> のページにアクセスします。</li>
+<li><code>Starter Warehouse</code> をクリックし <strong>[接続の詳細]</strong> タブにアクセスします。</li>
+<li>画面下部にある <strong>[Power BI]</strong> のアイコンをクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/276d9ae7e6ef7b69.jpg"></p>
+<ol type="1" start="4">
+<li><strong>[パートナーに接続]</strong> が表示されるので <strong>[接続ファイルをダウンロード]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/85860c3eda826ad.jpg"></p>
+<ol type="1" start="5">
+<li>PBIDS ファイルを開くための前提条件を確認するダイアログが表示されるので、前提条件を問題なく満たしている場合は <strong>[閉じる]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/f7ca1de9d9723452.jpg"></p>
+<ol type="1" start="6">
+<li>ダウンロードされた PBIDS ファイルを開きます。Power BI Desktop が起動するはずです。</li>
+<li>PBIDS ファイルの初回オープン時に以下キャプチャのような Azure Databricks 接続の認証情報を求めるダイアログが表示されます。個人用アクセス トークンなどが選べますが、ここでは Azure Active Directory を認証情報として用います。</li>
+<li>Azure Active Directory のサインインが正常に完了したら <strong>[接続]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/6edd5e595f3052be.jpg"></p>
+<h2 is-upgraded><strong>2. Power BI Desktop でのレポート作成</strong></h2>
+<p>日別の注文金額の集計結果 (Daily Order Amounts) を使って Power BI Desktop のレポートを作成します。</p>
+<ol type="1">
+<li>ナビゲーター画面で <code>daily_order_amounts</code> テーブルを選択して「読み込み」をクリックします。読み込みが完了するまで待ちます。(通常数十秒～ 1 分で完了します)</li>
+</ol>
+<p class="image-container"><img src="img/9f966e97d5777daa.jpg"></p>
+<ol type="1" start="2">
+<li><strong>[視覚化]</strong> &gt; <strong>[カード]</strong> をクリックします。キャンバスにカードの視覚化 (ビジュアライゼーション) が追加されます。</li>
+</ol>
+<p class="image-container"><img src="img/c8b080204d0728ae.jpg"></p>
+<ol type="1" start="3">
+<li>キャンバス上のカードの視覚化を選択した上で <strong>[フィールド]</strong> &gt; <code>daily_order_amounts</code> &gt; <code>sales_amount</code> にチェックを入れます。カードの視覚化に <code>sales_amount</code> の合計が表示されます。</li>
+</ol>
+<p class="image-container"><img src="img/d29800618d00b1b8.jpg"></p>
+<ol type="1" start="4">
+<li>キャンバスの何もないところをクリックしてカードの視覚化が選択されていない状態にした上で <strong>[視覚化]</strong> &gt; <strong>[テーブル]</strong> をクリックします。キャンバスにテーブルの視覚化が追加されます。</li>
+</ol>
+<p class="image-container"><img src="img/4c892f93f3255eea.jpg"></p>
+<ol type="1" start="5">
+<li>キャンバス上のテーブルの視覚化を選択した上で <strong>[フィールド]</strong> &gt; <code>daily_order_amounts</code> &gt; <code>order_purchase_date</code> と <code>sales_amount</code> にチェックを入れます。テーブルの視覚化に値が表示されます。</li>
+</ol>
+<p class="image-container"><img src="img/570cee19d55256e.jpg"></p>
+<ol type="1" start="6">
+<li>キャンバス上の視覚化の並びを整理します。キャンバスの何もないところをクリックして視覚化が選択されていない状態にした上で <strong>[視覚化]</strong> &gt; <strong>[折れ線グラフ]</strong> をクリックします。キャンバスに折れ線グラフの視覚化が追加されます。</li>
+</ol>
+<p class="image-container"><img src="img/88ff95eae1055a82.jpg"></p>
+<ol type="1" start="7">
+<li>キャンバス上の折れ線グラフの視覚化を選択した上で <strong>[フィールド]</strong> &gt; <code>daily_order_amounts</code> &gt; <code>order_purchase_date</code> と <code>sales_amount</code> にチェックを入れます。折れ線グラフの視覚化が更新されます。</li>
+</ol>
+<p class="image-container"><img src="img/b9af84fcfdd1f773.jpg"></p>
+<ol type="1" start="8">
+<li>キャンバスの何もないところをクリックして視覚化が選択されていない状態にした上で <strong>[視覚化]</strong> &gt; <strong>[スライサー]</strong> をクリックします。キャンバスにスライサーの視覚化が追加されます。</li>
+</ol>
+<p class="image-container"><img src="img/95951f674a3776d8.jpg"></p>
+<ol type="1" start="9">
+<li>キャンバス上のスライサーの視覚化を選択した上で <strong>[フィールド]</strong> &gt; <code>daily_order_amounts</code> &gt; <code>order_purchase_date</code> にチェックを入れます。スライサーの視覚化が更新されます。</li>
+</ol>
+<p class="image-container"><img src="img/703d4b0cc9089494.jpg"></p>
+<ol type="1" start="10">
+<li>キャンバス上の視覚化の並びを整理します。スライサーを動かしてレポートの表示が更新されることを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/9d93a29f19538b9b.jpg"></p>
+<h2 is-upgraded><strong>🎉 まとめ</strong></h2>
+<p>この章では、前章で作成した日別の注文金額の集計結果 (Daily Order Amounts) について、Power BI Desktop のレポートで可視化しました。</p>
+<p>ワークショップの本編はこの章で終了です。以降の章は Appendix ですので、必要に応じて取り組んでみてください。長時間お疲れ様でした。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="[Appendix] Databricks SQL のクエリ履歴の確認" duration="10">
+        <p>この章では、Databricks SQL のクエリ履歴の確認方法を学びます。</p>
+<ol type="1">
+<li>Databricks SQL の左側メニューの <strong>[クエリ履歴]</strong> にアクセスします。これまでに実行したクエリ履歴の一覧が表示されます。</li>
+</ol>
+<p class="image-container"><img src="img/3b30f78a1232fe8a.jpg"></p>
+<ol type="1" start="2">
+<li>適当なクエリを選択します。画面右側にクエリの概要や期間、集計タスク時間などが表示されます。<strong>[クエリ プロファイルを表示]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/261225a6e8d88e97.jpg"></p>
+<ol type="1" start="3">
+<li>すると画面左側にクエリ プロファイルのグラフ ビューが表示されます。より詳細な情報が見たい場合は画面右上の三点をクリックし <strong>[Spark UI で開く]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/b2d5ced765e460c8.jpg"></p>
+<ol type="1" start="4">
+<li>Spark UI が表示されますので、Spark 上でクエリがどのように実行されたかの詳細を見ることができます。</li>
+</ol>
+<p class="image-container"><img src="img/72e9aa53756ef7de.jpg"></p>
+<ol type="1" start="5">
+<li>なお、キャッシュから結果が返されたクエリについては以下キャプチャのように、クエリ プロファイルは確認できない点に留意ください。</li>
+</ol>
+<p class="image-container"><img src="img/e56364b98bd5e91c.jpg"></p>
+<p>本章は以上です。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="[Appendix] Databricks ノートブックを用いた Delta Lake 形式への変換" duration="20">
+        <p>この章では、分析対象のデータセットのうち Orders と Order Items <strong>以外</strong> のデータセットについて、Databricks ノートブックを使って CSV から Delta Lake 形式に変換します。</p>
+<h2 is-upgraded><strong>1. クラスターの作成</strong></h2>
+<ol type="1">
+<li>Databricks の Data Science &amp; Engineering のペルソナの左側メニューの <strong>[コンピューティング]</strong> にアクセスし <strong>[Personal Compute で作成]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/ce6facf02d3a3626.jpg"></p>
+<ol type="1" start="2">
+<li>新しいクラスターの作成画面で以下の項目を設定し <strong>[クラスターを作成]</strong> をクリックします。通常 5 分程度でクラスターの作成が完了します。完了を待たずに次のステップに進みましょう。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Databricks Runtime のバージョン</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Runtime: 11.3 LTS (Scala 2.12, Spark 3.3.0)</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>ノードタイプ</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>Standard_DS3_v2</code></strong> を選択します。</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>非アクティブ状態が ... 分継続した後に終了</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>60</code></strong> 分に変更します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/46ca8383d45f96e4.jpg"></p>
+<h2 is-upgraded><strong>2. リポジトリの追加</strong></h2>
+<ol type="1">
+<li>Databricks の Data Science &amp; Engineering の左側メニューの <strong>[リポジトリ]</strong> にアクセスし <strong>[リポジトリを追加]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/567e6def451379c.jpg"></p>
+<ol type="1" start="2">
+<li>リポジトリの追加画面で以下の項目を設定し <strong>[リポジトリを作成]</strong> をクリックします。</li>
+</ol>
+<table>
+<tr><td colspan="1" rowspan="1"><p><strong>項目</strong></p>
+</td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Git リポジトリの URL</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>https://github.com/microsoft/azure-databricks-sql-workshop-ja</code></strong> を入力します。</p>
+</td></tr>
+</table>
+<p class="image-container"><img src="img/612892dc89b39e02.jpg"></p>
+<h2 is-upgraded><strong>3. ノートブックの実行</strong></h2>
+<ol type="1">
+<li>クローンした Git リポジトリ <code>azure-databricks-sql-workshop-ja</code> の <code>notebooks</code> &gt; <code>Enrich Olist Datasets with ADB Notebook</code> を表示します。</li>
+</ol>
+<p class="image-container"><img src="img/5014d3846f433069.jpg"></p>
+<ol type="1" start="2">
+<li>定数設定のセルの値について必要に応じて自身の環境に合わせて書き換えます。</li>
+</ol>
+<p class="image-container"><img src="img/981518e3c2798cdd.jpg"></p>
+<ol type="1" start="3">
+<li><strong>[接続]</strong> をクリックし先ほど作成したクラスターを選択します。</li>
+</ol>
+<p class="image-container"><img src="img/bb089b770bc8cbff.jpg"></p>
+<ol type="1" start="4">
+<li><strong>[すべてを実行]</strong> をクリックします。</li>
+</ol>
+<p class="image-container"><img src="img/2d9da1158ba79e23.jpg"></p>
+<ol type="1" start="5">
+<li>すべてのセルの実行が正常に完了することを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/9094041e66e7f38.jpg"></p>
+<ol type="1" start="6">
+<li>Databricks SQL のデータ エクスプローラーにアクセスし <code>olist_enriched.customers</code> などの Delta テーブルが作成されたことを確認します。</li>
+</ol>
+<p class="image-container"><img src="img/6b42702565c602c8.jpg"></p>
+<p>本章は以上です。</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
