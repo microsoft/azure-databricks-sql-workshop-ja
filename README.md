@@ -1,7 +1,7 @@
 # Databricks SQL on Azure Workshop [Japanese]
 Databricks SQL と Synapse パイプライン & データ フローを中心とする Microsoft Azure のデータ分析プラットフォームの構築のノウハウを学習するためのワークショップの資材管理用の GitHub リポジトリです。以下 URL よりワークショップを開始できます。
 
-https://nakazax.github.io/azure-databricks-sql-workshop-ja/
+https://microsoft.github.io/azure-databricks-sql-workshop-ja/
 
 ## ワークショップのドキュメントの更新方法 (Contributor 向けの情報)
 本ワークショップのドキュメントは Markdown 形式のファイル (`workshop.md`) を [claat (Google Codelabs command line tool)](https://github.com/googlecodelabs/tools/tree/main/claat) でレンダリングして作成しています。
