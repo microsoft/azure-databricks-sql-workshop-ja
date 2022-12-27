@@ -1,0 +1,24 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Go environment
+        uses: actions/setup-go@v3
+      - name: Install claat
+        run: go install github.com/googlecodelabs/tools/claat@latest
+      - name: Generate lab contents
+        run:  $HOME/go/bin/claat export workshop.md
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: ./docs/
