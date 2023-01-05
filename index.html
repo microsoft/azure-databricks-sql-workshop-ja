@@ -29,7 +29,7 @@
     
       <google-codelab-step label="始める前に" duration="10">
         <p>このワークショップでは、Microsoft Azure のサービスと Microsoft Power BI を組み合わせて、以下のデータ分析プラットフォームをステップ バイ ステップで構築します。</p>
-<p class="image-container"><img src="img/52d8cfa03992b861.jpg"></p>
+<p class="image-container"><img src="img/5efbe265a24f2c06.jpg"></p>
 <h2 is-upgraded><strong>🎯 学習内容</strong></h2>
 <p>ワークショップを通じて以下の内容を学びます。</p>
 <ul>
@@ -122,7 +122,7 @@
 <p>Azure Databricks は Apache Spark ベースのフル マネージド サービスで、レイクハウス プラットフォームを実現できます。</p>
 <p>レイクハウスは、データ レイクとデータ ウェアハウスからなる造語です。データ レイクの高い経済性、データ ウェアハウスの高い処理性能を併せ持ちます。レイクハウスでは、あらゆるデータをデータ レイク に集約し、Delta Lake や Apache Parquet などの分析に最適化した形式に変換して保持します。</p>
 <p>Azure Databricks は Data Lake Storage をメインのデータ ストアとして、データ エンジニアリング、データ サイエンスと機械学習、そしてデータ分析のユースケースをカバーします。</p>
-<p class="image-container"><img src="img/d6aae66ab840b2b0.jpg"></p>
+<p class="image-container"><img src="img/a7cb99ef92b86cfc.jpg"></p>
 <h2 is-upgraded><strong>Databricks SQL</strong></h2>
 <p>Databricks SQL は Azure Databricks に搭載されているデータ分析のための機能で、2021 年 12 月に一般提供になりました。特徴として、クラウド ストレージ上のデータを標準的な SQL で分析できます。さらに SQL の結果を OSS のメジャーなダッシュボード ツール Redash をベースとしたリッチなダッシュボードで可視化できます。</p>
 <p>優れた UI/UX を持つだけでなく、2021 年 11 月に<a href="https://www.databricks.com/jp/blog/2021/11/02/databricks-sets-official-data-warehousing-performance-record.html" target="_blank">ビッグデータ向けのベンチマークの TPC-DS 100TB クラスで世界記録を更新</a>するなど、非常に高い処理性能を兼ね備えています。</p>
@@ -130,7 +130,7 @@
 <h2 is-upgraded><strong>Azure Synapse Analytics</strong></h2>
 <p>Azure Synapse Analytics は、エンドツーエンドの分析のための統合クラウド ネイティブ プラットフォームです。図の左側にあるようなオンプレミス、クラウドなど様々なデータを集約し、Synapse スタジオという専用の UI で集中的に分析できます。</p>
 <p>さらに Microsoft Purview や Azure Databricks などの Microsoft の他のサービスとのシームレスな連携機能も特長です。専用 SQL プールやサーバーレス SQL プールなどの分析ランタイムを備えています。</p>
-<p class="image-container"><img src="img/6eac8aa15a943fe2.jpg"></p>
+<p class="image-container"><img src="img/c210d4295c46fa8c.jpg"></p>
 <h2 is-upgraded><strong>Synapse パイプライン</strong></h2>
 <p>Synapse パイプラインは Azure Synapse Analytics に搭載されたデータ統合機能で、データのコピーや ETL 処理をスケジュールやイベント ベースのトリガーで実行できます。100 以上の組み込みのコネクターを提供しており、Azure の主要なデータ ストアはもちろん、Azure 以外のデータ ストアについてもサポートされています。</p>
 <p>コピー アクティビティという機能を用いてオンプレミスや他のクラウドからデータを Azure にコピーし、後述するマッピング データ フローで ETL (Extract / Transform / Load) を行うユーザーが多いです。</p>
@@ -389,7 +389,7 @@
         <p>この章では、Synapse パイプラインのコピー アクティビティを用いて、分析対象のデータを Azure Data Lake Storage (ADLS) Gen2 に配置します。</p>
 <h2 is-upgraded><strong>🔎 データ変換の流れ</strong></h2>
 <p>この章で実現するデータ変換の流れは以下の通りです。</p>
-<p class="image-container"><img src="img/c3b8bd8f2433cbb.jpg"></p>
+<p class="image-container"><img src="img/566d1ba3c44cad6.jpg"></p>
 <h2 is-upgraded><strong>1. ストレージ アカウントのコンテナー作成</strong></h2>
 <p>はじめに、分析対象のデータを格納するための領域 (コンテナー) をストレージ アカウントに作成します。</p>
 <p>(1) Azure ポータルにアクセスし、ワークショップで利用するリソース グループを選択します。リソース グループから自身が利用するストレージ アカウントを選択します。</p>
@@ -764,7 +764,7 @@ SELECT COUNT(*) FROM olist_raw.order_items;
         <p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders の CSV ファイル (<code>olist_orders_dataset.csv</code>) を Delta Lake 形式に変換します。変換の前後で CSV 形式のデータと Delta Lake 形式のデータを Databricks SQL のクエリとデータ エクスプローラーで概観します。</p>
 <h2 is-upgraded><strong>🔎 データ変換の流れ</strong></h2>
 <p>この章で実現するデータ変換の流れは以下の通りです。</p>
-<p class="image-container"><img src="img/9a72044edb041039.jpg"></p>
+<p class="image-container"><img src="img/31f34bc26545cb93.jpg"></p>
 <h2 is-upgraded><strong>1. Databricks SQL による CSV データの概観</strong></h2>
 <p>(1) Databricks SQL の左側メニューの <strong>[データ]</strong> にアクセスします。データ エクスプローラーと呼ばれる画面が表示されます。<code>olist_raw</code> データベースの <code>orders</code> テーブルの <strong>[スキーマ]</strong> を選択し、列名やデータ型を確認します。<code>order_id</code> がキー項目です。</p>
 <p class="image-container"><img src="img/af185ba193ebcd7c.jpg"></p>
@@ -946,7 +946,7 @@ SELECT * FROM olist_enriched.orders;
         <p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders Items の CSV ファイル (<code>olist_order_items_dataset.csv</code>) を Delta Lake 形式に変換します。変換の前後で CSV 形式のデータと Delta Lake 形式のデータを Databricks SQL のクエリとデータ エクスプローラーで概観します。</p>
 <h2 is-upgraded><strong>🔎 データ変換の流れ</strong></h2>
 <p>この章で実現するデータ変換の流れは以下の通りです。</p>
-<p class="image-container"><img src="img/db8c5938f3754123.jpg"></p>
+<p class="image-container"><img src="img/2174f697688c1e9f.jpg"></p>
 <h2 is-upgraded><strong>1. Databricks SQL による CSV データの概観</strong></h2>
 <p>(1) Databricks SQL の左側メニューの <strong>[データ]</strong> にアクセスします。データ エクスプローラーで <code>olist_raw</code> データベースの <code>order_items</code> テーブルの <strong>[スキーマ]</strong> を選択し、列名やデータ型を確認します。<code>order_id</code> と <code>order_item_id</code> がキー項目です。</p>
 <p class="image-container"><img src="img/99d2a727839c5268.jpg"></p>
@@ -1051,7 +1051,7 @@ SELECT * FROM olist_enriched.order_items;
         <p>この章では、Azure Synapse Analytics のマッピング データ フローを用いて Orders と Order Items の Delta Lake 形式のデータを元に日別の注文金額の集計を行い、Delta Lake 形式で出力します。その後、Databricks SQL のクエリとデータ エクスプローラーで結果を概観します。</p>
 <h2 is-upgraded><strong>🔎 データ変換の流れ</strong></h2>
 <p>この章で実現するデータ変換の流れは以下の通りです。</p>
-<p class="image-container"><img src="img/4d5b65b3eff973c3.jpg"></p>
+<p class="image-container"><img src="img/29d06c10c8524148.jpg"></p>
 <h2 is-upgraded><strong>1. マッピング データ フローによる集計処理</strong></h2>
 <p>具体的な手順として、Synapse Studio にてデータ フローとパイプラインを作成、パイプラインにデータ フロー アクティビティを定義してパイプラインを実行します。</p>
 <h3 is-upgraded><strong>データ フローの完成形</strong></h3>
