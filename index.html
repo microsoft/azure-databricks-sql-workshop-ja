@@ -1404,6 +1404,18 @@ WHERE
 <ul>
 <li>クエリ名を <code>Daily Order Amounts</code> に変更します</li>
 <li>クエリ エディタに以下のスニペットを貼り付けます</li>
+</ul>
+<pre><code language="language-sql" class="language-sql">SELECT
+  *
+FROM
+  olist_curated.daily_order_amounts
+WHERE
+  order_purchase_date &gt;= &#39;&#123;&#123; Date Range.start }}&#39;
+  AND order_purchase_date &lt; &#39;&#123;&#123; Date Range.end}}&#39;
+ORDER BY
+  order_purchase_date;
+</code></pre>
+<ul>
 <li>画面下部に <code>Date Range</code> というクエリ パラメーターのウィジェットが表示されるので歯車アイコンをクリックします</li>
 <li>クエリ パラメーターのウィジェットの編集画面で <strong>[Type]</strong> を <code>日付範囲</code> に変更し <strong>[OK]</strong> をクリックします</li>
 <li>日付範囲の左側 (<code>start</code>) を <code>2016-01-01</code>、右側 (<code>end</code>) を <code>2019-01-01</code> にして <strong>[変更を適用]</strong> をクリックし、結果が更新されたことを確認します</li>
