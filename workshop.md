@@ -1559,6 +1559,19 @@ Value column | **`total_sales_amount`** を選択します。
 
 - クエリ名を `Daily Order Amounts` に変更します
 - クエリ エディタに以下のスニペットを貼り付けます
+
+```sql
+SELECT
+  *
+FROM
+  olist_curated.daily_order_amounts
+WHERE
+  order_purchase_date >= '{{ Date Range.start }}'
+  AND order_purchase_date < '{{ Date Range.end}}'
+ORDER BY
+  order_purchase_date;
+```
+
 - 画面下部に `Date Range` というクエリ パラメーターのウィジェットが表示されるので歯車アイコンをクリックします
 - クエリ パラメーターのウィジェットの編集画面で **[Type]** を `日付範囲` に変更し **[OK]** をクリックします
 - 日付範囲の左側 (`start`) を `2016-01-01`、右側 (`end`) を `2019-01-01` にして **[変更を適用]** をクリックし、結果が更新されたことを確認します
