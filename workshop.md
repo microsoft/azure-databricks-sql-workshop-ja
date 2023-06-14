@@ -420,7 +420,7 @@ Synapse Studio の左側メニューは既定では折りたたみされてお�
 </aside>
 
 ### **3. コピー アクティビティによるデータの配置**
-分析対象のデータを Zip にまとめたファイルを [GitHub リポジトリ](https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip)に格納していますので、そちらを ADLS Gen2 にコピーします。
+分析対象のデータを Zip にまとめたファイルを [GitHub リポジトリ](https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazilian-ecommerse-dataset.zip)に格納していますので、そちらを ADLS Gen2 にコピーします。
 
 具体的な手順として、Synapse Studio にてリンク サービス、データセット、パイプラインを作成し、パイプラインにコピー アクティビティを定義して、パイプラインを実行します。
 
@@ -484,7 +484,7 @@ Synapse Studio の左側メニューは既定では折りたたみされてお�
 --- | ---
 名前 | 任意の名前を入力します。このワークショップでは **`CopySourceDataset`** を入力します。
 リンク サービス | 先ほど作成したリンク サービス **`HttpGitHubAdbWorkshop`** を選択します。
-相対 URL | **`raw/main/assets/olist-brazillian-ecommerse-dataset.zip`** を入力します。
+相対 URL | **`raw/main/assets/olist-brazilian-ecommerse-dataset.zip`** を入力します。
 
 ![](images//deploy-data/create-dataset-source-4.jpg)
 
@@ -513,7 +513,7 @@ Synapse Studio の左側メニューは既定では折りたたみされてお�
 --- | ---
 名前 | 任意の名前を入力します。このワークショップでは **`CopyTargetDataset`** を入力します。
 リンク サービス | **`{Synapse ワークスペース名}-WorkspaceDefaultStorage`** を選択します。
-ファイル パス | コンテナ名に **`olist-brazillian-ecommerce`**、フォルダ名に **`raw`** を入力します。(ファイル名は空白のままで OK です)
+ファイル パス | コンテナ名に **`olist-brazilian-ecommerce`**、フォルダ名に **`raw`** を入力します。(ファイル名は空白のままで OK です)
 
 ![](images//deploy-data/create-dataset-target-3.jpg)
 
@@ -592,7 +592,7 @@ zip ファイル名をフォルダーとして保持する | チェックを外�
 以下は Synapse パイプラインのコピー アクティビティではなく手動でデータを配置する手順です。コピー アクティビティでデータを配置済みの場合、この手順はスキップしてください。
 
 (1) 以下 URL にアクセスし、**[Download]** をクリックし、データセットの Zip ファイルをダウンロードします。
-[https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip](https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip)
+[https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazilian-ecommerse-dataset.zip](https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazilian-ecommerse-dataset.zip)
 
 ![](images//deploy-data/deploy-data-1.jpg)
 
@@ -966,7 +966,7 @@ Delta Lake テーブルに対して行う変更について、シンク変換で
 
 **項目** | **設定値**
 --- | ---
-ファイル パス | コンテナ名に **`olist-brazillian-ecommerce`**、フォルダ名に **`raw`**、ファイル名に **`olist_orders_dataset.csv`** を入力します。(「参照」からファイルを選択する方法でも OK です)
+ファイル パス | コンテナ名に **`olist-brazilian-ecommerce`**、フォルダ名に **`raw`**、ファイル名に **`olist_orders_dataset.csv`** を入力します。(「参照」からファイルを選択する方法でも OK です)
 先頭行をヘッダーとして | チェックします。
 
 ![](images//enrich-orders/create-data-flow-5.jpg)
@@ -1023,7 +1023,7 @@ Delta Lake テーブルに対して行う変更について、シンク変換で
 
 **項目** | **設定値**
 --- | ---
-フォルダーのパス | コンテナ名に **`olist-brazillian-ecommerce`**、フォルダー名に **`enriched/orders/`** を入力します。
+フォルダーのパス | コンテナ名に **`olist-brazilian-ecommerce`**、フォルダー名に **`enriched/orders/`** を入力します。
 更新方法 | **`アップサートを許可`** を選択します。
 キー列 | **`order_id`** を選択します。
 デルタ オプション > 自動圧縮 | チェックします。
@@ -1143,7 +1143,7 @@ Azure Synapse Analytics のマッピング データ フローを用いて Order
 
 **項目** | **設定値**
 --- | ---
-ファイル パス | コンテナ名に **`olist-brazillian-ecommerce`**、フォルダー名に **`raw`**、ファイル名に **`olist_order_items_dataset.csv`** を入力します。
+ファイル パス | コンテナ名に **`olist-brazilian-ecommerce`**、フォルダー名に **`raw`**、ファイル名に **`olist_order_items_dataset.csv`** を入力します。
 
 ![](images//enrich-order-items/create-data-flow-3.jpg)
 
@@ -1167,7 +1167,7 @@ Azure Synapse Analytics のマッピング データ フローを用いて Order
 
 **項目** | **設定値**
 --- | ---
-フォルダーのパス | コンテナ名に **`olist-brazillian-ecommerce`**、フォルダー名に **`enriched/order_items/`** を入力します。
+フォルダーのパス | コンテナ名に **`olist-brazilian-ecommerce`**、フォルダー名に **`enriched/order_items/`** を入力します。
 キー列 | **`order_id`** と **`order_item_id`** を選択します。
 
 ![](images//enrich-order-items/create-data-flow-6.jpg)
@@ -1274,7 +1274,7 @@ Duration: 00:30:00
 
 **項目** | **設定値**
 --- | ---
-フォルダーのパス | コンテナ名に **`olist-brazillian-ecommerce`**、フォルダー名に **`enriched/orders`** を入力します。
+フォルダーのパス | コンテナ名に **`olist-brazilian-ecommerce`**、フォルダー名に **`enriched/orders`** を入力します。
 
 ![](images//curate-daily-order-amounts/create-data-flow-2.jpg)
 
@@ -1302,7 +1302,7 @@ Duration: 00:30:00
 
 **項目** | **設定値**
 --- | ---
-フォルダーのパス | コンテナ名に **`olist-brazillian-ecommerce`**、フォルダー名に **`enriched/order_items`** を入力します。
+フォルダーのパス | コンテナ名に **`olist-brazilian-ecommerce`**、フォルダー名に **`enriched/order_items`** を入力します。
 
 4) 続いて **[プロジェクション]** タブを開き、**[スキーマのインポート]** をクリックします。スキーマのインポート動作の画面では何も入力せずに **[インポート]** をクリックし、スキーマのインポートが完了するまで待機します。
 
@@ -1386,7 +1386,7 @@ Duration: 00:30:00
 
 **項目** | **設定値**
 --- | ---
-フォルダーのパス | コンテナ名に **`olist-brazillian-ecommerce`**、フォルダー名に **`curated/daily_order_amounts/`** を入力します。
+フォルダーのパス | コンテナ名に **`olist-brazilian-ecommerce`**、フォルダー名に **`curated/daily_order_amounts/`** を入力します。
 更新方法 | **`アップサートを許可`** を選択します。
 キー列 | **`order_purchase_date`** を選択します。
 デルタ オプション > 自動圧縮 | チェックします。
