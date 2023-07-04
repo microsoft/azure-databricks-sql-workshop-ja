@@ -20,8 +20,9 @@
   </style>
 </head>
 <body>
-  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab-analytics gaid="UA-49880327-14" ga4id=""></google-codelab-analytics>
   <google-codelab codelab-gaid=""
+                  codelab-ga4id=""
                   id="docs"
                   title="Databricks SQL on Azure ワークショップ"
                   environment="web"
@@ -418,7 +419,7 @@
 <p class="image-container"><img src="img/4aee3b8f78268da3.jpg"></p>
 </aside>
 <h2 is-upgraded><strong>3. コピー アクティビティによるデータの配置</strong></h2>
-<p>分析対象のデータを Zip にまとめたファイルを <a href="https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip" target="_blank">GitHub リポジトリ</a>に格納していますので、そちらを ADLS Gen2 にコピーします。</p>
+<p>分析対象のデータを Zip にまとめたファイルを <a href="https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazilian-ecommerse-dataset.zip" target="_blank">GitHub リポジトリ</a>に格納していますので、そちらを ADLS Gen2 にコピーします。</p>
 <p>具体的な手順として、Synapse Studio にてリンク サービス、データセット、パイプラインを作成し、パイプラインにコピー アクティビティを定義して、パイプラインを実行します。</p>
 <aside class="special"><p><strong>💡 Synapse パイプラインの用語</strong></p>
 <p>これから扱う Synapse パイプラインの用語について簡単に説明します。詳細は <a href="https://learn.microsoft.com/ja-jp/azure/data-factory/concepts-datasets-linked-services?tabs=data-factory" target="_blank">データセット - Azure Data Factory &amp; Azure Synapse | Microsoft Learn</a> を参照してください。</p>
@@ -474,12 +475,12 @@
 </td><td colspan="1" rowspan="1"><p>先ほど作成したリンク サービス <strong><code>HttpGitHubAdbWorkshop</code></strong> を選択します。</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>相対 URL</p>
-</td><td colspan="1" rowspan="1"><p><strong><code>raw/main/assets/olist-brazillian-ecommerse-dataset.zip</code></strong> を入力します。</p>
+</td><td colspan="1" rowspan="1"><p><strong><code>raw/main/assets/olist-brazilian-ecommerse-dataset.zip</code></strong> を入力します。</p>
 </td></tr>
 </table>
-<p class="image-container"><img src="img/bf13eb1e40c6271a.jpg"></p>
+<p class="image-container"><img src="img/dbe10eeafbc1aeba.jpg"></p>
 <p>(5) 作成されたデータセットの <strong>[接続]</strong> タブの <strong>[圧縮の種類]</strong> を <code>ZipDelfate (.zip)</code> に変更します。</p>
-<p class="image-container"><img src="img/e43c8adf06988427.jpg"></p>
+<p class="image-container"><img src="img/795fae7f3d840a2a.jpg"></p>
 <p>これでコピー元のデータセットの作成は完了ですので、発行しておきましょう。</p>
 <h3 is-upgraded><strong>3-3. データセット (コピー先) の作成</strong></h3>
 <p>続いてコピー先 (ADLS Gen2 の CSV ファイル群) に対応するデータセットを作成します。</p>
@@ -500,7 +501,7 @@
 </td><td colspan="1" rowspan="1"><p><strong><code>{Synapse ワークスペース名}-WorkspaceDefaultStorage</code></strong> を選択します。</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>ファイル パス</p>
-</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダ名に <strong><code>raw</code></strong> を入力します。(ファイル名は空白のままで OK です)</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazilian-ecommerce</code></strong>、フォルダ名に <strong><code>raw</code></strong> を入力します。(ファイル名は空白のままで OK です)</p>
 </td></tr>
 </table>
 <p class="image-container"><img src="img/8d96b37abb3342cd.jpg"></p>
@@ -559,17 +560,17 @@
 <p>以上でパイプラインの作成と実行は完了です。発行しておきましょう。</p>
 <h2 is-upgraded>4. <strong>(オプション) 手動でのデータ配置</strong></h2>
 <p>以下は Synapse パイプラインのコピー アクティビティではなく手動でデータを配置する手順です。コピー アクティビティでデータを配置済みの場合、この手順はスキップしてください。</p>
-<p>(1) 以下 URL にアクセスし、<strong>[Download]</strong> をクリックし、データセットの Zip ファイルをダウンロードします。 <a href="https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip" target="_blank">https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazillian-ecommerse-dataset.zip</a></p>
-<p class="image-container"><img src="img/580959ee6c6d8954.jpg"></p>
+<p>(1) 以下 URL にアクセスし、<strong>[Download]</strong> をクリックし、データセットの Zip ファイルをダウンロードします。 <a href="https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazilian-ecommerse-dataset.zip" target="_blank">https://github.com/microsoft/azure-databricks-sql-workshop-ja/blob/main/assets/olist-brazilian-ecommerse-dataset.zip</a></p>
+<p class="image-container"><img src="img/399c645567fc3c16.jpg"></p>
 <p>(2) Zip ファイルを展開します。</p>
-<p class="image-container"><img src="img/2f2f1d4e97ecac26.jpg"></p>
+<p class="image-container"><img src="img/2f4a7b7408481cef.jpg"></p>
 <p>(3) Azure ポータルで自身が利用するストレージ アカウントで、左側メニュー <strong>[ストレージ ブラウザー (プレビュー)]</strong> にアクセスし、コンテナー <code>olist-brazilian-ecommerce</code> を選択します。</p>
 <p>(4) <strong>[ディレクトリの追加]</strong> を選択します。画面右側に <strong>[ディレクトリの追加]</strong> が表示されますので、<strong>[名前]</strong> に <strong><code>raw</code></strong> と入力し、<strong>[保存]</strong> をクリックします。</p>
 <p class="image-container"><img src="img/9522f44fb68b1a3.jpg"></p>
 <p>(5) <code>raw</code> ディレクトリを選択します。<strong>[アップロード]</strong> &gt; <strong>[ファイルの参照]</strong> をクリックし、手元にダウンロード &amp; 展開した CSV ファイル群をアップロードします。</p>
 <p class="image-container"><img src="img/f0faada4ef26f25.jpg"></p>
 <p>(一度に複数ファイルをアップロードできます)</p>
-<p class="image-container"><img src="img/4e3a25819714c50d.jpg"></p>
+<p class="image-container"><img src="img/4b49400a782bade7.jpg"></p>
 <p>(6) アップロードした CSV ファイル群が以下のように表示されます。 <img src="img/af04a30b18d4ae34.jpg"></p>
 <h2 is-upgraded><strong>🎉 まとめ</strong></h2>
 <p>この章では、分析対象として利用するデータの内容を確認し、Azure Data Lake Storage (ADLS) Gen2 に配置しました。内容的にはここで一区切りになります。ここまで休憩を取らずに進めている場合、少し休憩を取ってリフレッシュしてから、次の章に進みましょう。</p>
@@ -822,7 +823,7 @@ SELECT COUNT(*) FROM olist_raw.order_items;
 </td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>ファイル パス</p>
-</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダ名に <strong><code>raw</code></strong>、ファイル名に <strong><code>olist_orders_dataset.csv</code></strong> を入力します。(「参照」からファイルを選択する方法でも OK です)</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazilian-ecommerce</code></strong>、フォルダ名に <strong><code>raw</code></strong>、ファイル名に <strong><code>olist_orders_dataset.csv</code></strong> を入力します。(「参照」からファイルを選択する方法でも OK です)</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>先頭行をヘッダーとして</p>
 </td><td colspan="1" rowspan="1"><p>チェックします。</p>
@@ -877,7 +878,7 @@ SELECT COUNT(*) FROM olist_raw.order_items;
 </td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
-</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/orders/</code></strong> を入力します。</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazilian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/orders/</code></strong> を入力します。</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>更新方法</p>
 </td><td colspan="1" rowspan="1"><p><strong><code>アップサートを許可</code></strong> を選択します。</p>
@@ -970,7 +971,7 @@ SELECT * FROM olist_enriched.orders;
 </td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>ファイル パス</p>
-</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>raw</code></strong>、ファイル名に <strong><code>olist_order_items_dataset.csv</code></strong> を入力します。</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazilian-ecommerce</code></strong>、フォルダー名に <strong><code>raw</code></strong>、ファイル名に <strong><code>olist_order_items_dataset.csv</code></strong> を入力します。</p>
 </td></tr>
 </table>
 <p class="image-container"><img src="img/23a0a536710a8e5b.jpg"></p>
@@ -989,7 +990,7 @@ SELECT * FROM olist_enriched.orders;
 </td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
-</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/order_items/</code></strong> を入力します。</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazilian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/order_items/</code></strong> を入力します。</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>キー列</p>
 </td><td colspan="1" rowspan="1"><p><strong><code>order_id</code></strong> と <strong><code>order_item_id</code></strong> を選択します。</p>
@@ -1093,7 +1094,7 @@ SELECT * FROM olist_enriched.order_items;
 </td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
-</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/orders</code></strong> を入力します。</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazilian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/orders</code></strong> を入力します。</p>
 </td></tr>
 </table>
 <p class="image-container"><img src="img/270627059fd8c3b4.jpg"></p>
@@ -1135,7 +1136,7 @@ SELECT * FROM olist_enriched.order_items;
 </td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
-</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/order_items</code></strong> を入力します。</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazilian-ecommerce</code></strong>、フォルダー名に <strong><code>enriched/order_items</code></strong> を入力します。</p>
 </td></tr>
 </table>
 <ol type="1" start="4">
@@ -1259,7 +1260,7 @@ SELECT * FROM olist_enriched.order_items;
 </td><td colspan="1" rowspan="1"><p><strong>設定値</strong></p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>フォルダーのパス</p>
-</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazillian-ecommerce</code></strong>、フォルダー名に <strong><code>curated/daily_order_amounts/</code></strong> を入力します。</p>
+</td><td colspan="1" rowspan="1"><p>コンテナ名に <strong><code>olist-brazilian-ecommerce</code></strong>、フォルダー名に <strong><code>curated/daily_order_amounts/</code></strong> を入力します。</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>更新方法</p>
 </td><td colspan="1" rowspan="1"><p><strong><code>アップサートを許可</code></strong> を選択します。</p>
